@@ -9,8 +9,9 @@ class DataLoader(object):
 
     #Emmanuel
     def load_funda_data_2018(self):
-        # here the code to load raw data from base folder is implemented
-        raise NotImplementedError('Not yet implemented')
+        full_path = os.path.join(self.base_folder, 'data/raw/funda_2018.csv')
+        data = pd.read_csv(full_path)
+        return data
     
     #Robin
     def load_funda_data_2020(self):
@@ -20,8 +21,10 @@ class DataLoader(object):
 
     #Emmanuel
     def load_broker_info(self):
-        # here the code to load raw data from base folder is implemented
-        raise NotImplementedError('Not yet implemented')
+        full_path = os.path.join(self.base_folder, 'data/raw/brokers_2020_info.csv')
+        data = pd.read_csv(full_path)
+        return data
+        
     
     #Robin
     def load_broker_reviews(self):
@@ -30,8 +33,9 @@ class DataLoader(object):
     
     #Emmanuel
     def load_cbs_data(self):
-        # here the code to load raw data from base folder is implemented
-        raise NotImplementedError('Not yet implemented')
+        full_path = os.path.join(self.base_folder, 'data/raw/CBS_data.csv')
+        data = pd.read_csv(full_path, sep=";")
+        return data
     
     #Robin
     def load_cbs_postcodes(self):

@@ -42,8 +42,7 @@ class DataLoader(object):
     def load_cbs_postcodes(self):
         full_path = os.path.join(self.base_folder, 'data/raw/pc6-gwb2020.csv')
         data = pd.read_csv(full_path, sep=";")
-        return data
-    
+        return data    
     def load_funda_images(self):
         # here the code to load raw data from base folder is implemented
         raise NotImplementedError('Not yet implemented')

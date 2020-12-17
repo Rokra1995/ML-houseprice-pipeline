@@ -1,6 +1,7 @@
 '''Contains classes to load data
 '''
 import pandas as pd
+import os
 
 class DataLoader(object):
 

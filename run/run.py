@@ -1,5 +1,5 @@
 import json
-from forecasting.load_data import DataLoader
+from funda.load_data import DataLoader
 # important: for the above import to work, the package needs to be
 # installed in the conda environment using e.g. pip install -e .
 # from the package root, or python setup.py develop.
@@ -8,10 +8,11 @@ from forecasting.load_data import DataLoader
 
 def main():
     # here goes the pipeline code
-    with open('./conf.json', 'r') as f:
+    with open('run/conf.json', 'r') as f:
         conf = json.load(f)
     data_loader = DataLoader(base_folder=conf['base_folder'])
-    raw_data = data_loader.load_data()
+    funda_2018 = data_loader.load_funda_data_2018()
+    print(funda.head())
 
 
 if __name__ == "__main__":

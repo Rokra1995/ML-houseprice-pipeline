@@ -53,7 +53,7 @@ class DataLoader(object):
     def load_labour_market_info(self):
         full_path = os.path.join(self.base_folder, 'data/raw/labour_market_info.csv')
         data = pd.read_csv(full_path, sep=";")
-              return data
+        return data
 
     #Emmanuel
     def load_crime_data(self):

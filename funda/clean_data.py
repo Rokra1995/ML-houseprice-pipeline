@@ -17,7 +17,8 @@ class DataCleaner(object):
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
 
         return data
-
+    
+    # © Felicia Betten
     def calculate_mean_yearofbuilding_funda_2020(self, date):
         date = date.replace('After ', '') # replace 'After ' with empty
         date = date.replace('Before ', '') # replace 'Before ' with empty
@@ -55,7 +56,8 @@ class DataCleaner(object):
             data = data.astype({k: v})
 
         return data
-
+    
+        # © Robin Kratschmayr
     def clean_broker_reviews(data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)

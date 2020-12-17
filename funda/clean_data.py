@@ -13,7 +13,7 @@ class DataCleaner(object):
         data = data.replace(to_replace="None", value=np.nan, inplace=True)
         # Drop column Ownership situation
         data.drop(axis=1, columns='Ownership situation')
-        # Remove m³ removed from parcelsurface  
+        # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
 
         return data

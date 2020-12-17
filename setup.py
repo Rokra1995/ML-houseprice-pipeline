@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='forecasting',
+    name='funda',
     version='0.1.0',
     description='Example package for ML pipeline',
     packages=find_packages(include=['funda']),

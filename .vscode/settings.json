@@ -1,3 +1,9 @@
 {
-    "python.pythonPath": "/Users/eaowusu/anaconda3/envs/AI-for-Business-env/bin/python"
+    "python.pythonPath":"C:\Users\B.R\anaconda3\envs\env3\\python.exe",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.automationShell.linux": "",
+    "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe",
+    "python.showStartPage": false,
+    "python.pythonPath": "C:\\Users\\B.R\\anaconda3\\envs\\env3\\python.exe"
 }

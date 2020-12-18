@@ -62,6 +62,7 @@ class DataCleaner(object):
         return data
 
     # © Robin Kratschmayr
+    @staticmethod
     def clean_broker_reviews(data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)

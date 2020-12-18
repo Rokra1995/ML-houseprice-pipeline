@@ -25,7 +25,7 @@ class DataCleaner(object):
         if "-" in date: # check whether there is a '-' in the column
             date = date.split("-") # if yes, split the two dates
             date = (int(date[0]) + int(date[1])) / 2 # calculate the mean of the two dates
-            return(int(date)) # return the mean data
+            return(int(date)) # return the mean date
         else:
             return int(date) # if not, return the only date
 
@@ -56,8 +56,8 @@ class DataCleaner(object):
             data = data.astype({k: v})
 
         return data
-    
-        # © Robin Kratschmayr
+
+    # © Robin Kratschmayr
     def clean_broker_reviews(data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)

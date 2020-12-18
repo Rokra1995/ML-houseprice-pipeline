@@ -15,7 +15,10 @@ class DataCleaner(object):
         data.drop(axis=1, columns='Ownership situation')
         # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-
+        # Remove \r \n from housetype
+        data['housetype'] = df_funda_2020['housetype'].str.rstrip('\r\n')
+        # Replace 0 in Garden_binary with NaN
+        data['garden_binary'] = data['garden_binary'].replace(0, np.nan)
         return data
     
     # © Felicia Betten

@@ -56,7 +56,7 @@ class DataCleaner(object):
             data = data.astype({k: v})
 
         return data
-       
+
     # © Robin Kratschmayr
     def clean_broker_reviews(data):
         #shortening the reviewtype

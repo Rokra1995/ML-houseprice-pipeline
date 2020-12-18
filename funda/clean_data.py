@@ -36,7 +36,7 @@ class DataCleaner(object):
     # © Robin Kratschmayr
     def clean_broker_info(data):
         #dropping columns url & replacing the word 'missing' with a 0 to be able to transform col as integer
-        data = data.drop(columns=['url']).replace('Missing',0)
+        data = data.drop(columns=['url']).replace('Missing',np.nan)
         #replacing the whitespace in the middle of the postcode to be able to link with other cbs data
         data['zipcode_broker'] = data.zipcode_broker.replace(" ", "", regex=True)
         #removing unnecessary whitespaces in the broker description
@@ -48,9 +48,10 @@ class DataCleaner(object):
             'zipcode_broker':'string',
             'description_broker': 'string',
             'score_broker': 'float64',
-            'number_reviews_broker': 'int64',
-            'number_houses_for_sale_offered': 'int64',
-            'number_houses_sold_last_12_months': 'int64'}
+            'number_reviews_broker': 'Float64',# has to be converted to float since the column contains NaN values that are not convertible to int
+            'number_houses_for_sale_offered': 'Float64',
+            'number_houses_sold_last_12_months': 'Float64',
+            }
 
         for k,v in type_dict.items():
             data = data.astype({k: v})

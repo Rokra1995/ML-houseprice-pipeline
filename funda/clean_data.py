@@ -13,11 +13,12 @@ class DataCleaner(object):
         data = data.replace(to_replace="None", value=np.nan, inplace=True)
         # Drop column Ownership situation
         data.drop(axis=1, columns='Ownership situation')
-        # Remove m³ removed from parcelsurface  
+        # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
 
         return data
-
+    
+    # © Felicia Betten
     def calculate_mean_yearofbuilding_funda_2020(self, date):
         date = date.replace('After ', '') # replace 'After ' with empty
         date = date.replace('Before ', '') # replace 'Before ' with empty
@@ -55,7 +56,8 @@ class DataCleaner(object):
             data = data.astype({k: v})
 
         return data
-
+       
+    # © Robin Kratschmayr
     def clean_broker_reviews(data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)

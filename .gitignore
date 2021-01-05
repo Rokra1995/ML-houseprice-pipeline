@@ -10,3 +10,4 @@ __pycache__
 funda/felicia.py
 notebooks/tensorflow.ipynb
 .vscode/settings.json
+.vscode

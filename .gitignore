@@ -3,3 +3,6 @@ __pycache__
 *.csv
 /.vscode
 /forecasting_study.egg-info
+/forecasting.egg-info
+/build
+/dist

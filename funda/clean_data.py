@@ -81,7 +81,7 @@ class DataCleaner(object):
         data['ReviewDate'] = pd.to_datetime(data['ReviewDate'])
         return data
 
-  # © Emmanuel Owusu Annim
+    # © Emmanuel Owusu Annim
     def clean_tourist_info(data):
         #Translate Dutch Headers to English Headers
         full_path = os.path.join(self.base_folder, 'data/raw/tourist_info.csv')

@@ -82,6 +82,7 @@ class DataCleaner(object):
         return data
 
     # © Emmanuel Owusu Annim
+    @staticmethod
     def clean_tourist_info(data):
         #Translate Dutch Headers to English Headers
         full_path = os.path.join(self.base_folder, 'data/raw/tourist_info.csv')
@@ -90,6 +91,7 @@ class DataCleaner(object):
         return data
             
     # © Emmanuel Owusu Annim
+    @staticmethod
     def clean_crime_info(data):
         #Translate Dutch Headers to English Headers
         full_path = os.path.join(self.base_folder, 'data/raw/crime_data.csv')
@@ -98,6 +100,7 @@ class DataCleaner(object):
         return data
             
     # © Emmanuel Owusu Annim
+    @staticmethod
     def clean_labour_info(data):
         #Translate Dutch Headers to English Headers
         full_path = os.path.join(self.base_folder, 'data/raw/labour_market_info.csv')

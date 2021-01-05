@@ -1,4 +1,4 @@
-'''This module contains classes to clean the Funda 2020 data 
+'''This module contains classes to clean the data 
 ''' 
 
 import pandas as pd
@@ -13,9 +13,16 @@ class DataCleaner(object):
         data = data.replace(to_replace="None", value=np.nan, inplace=True)
         # Drop column Ownership situation
         data.drop(axis=1, columns='Ownership situation')
+        # Remove m³ removed from parcelsurface  
+        data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
+        return data
+
         # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-
+        # Remove \r \n from housetype
+        data['housetype'] = df_funda_2020['housetype'].str.rstrip('\r\n')
+        # Replace 0 in Garden_binary with NaN
+        data['garden_binary'] = data['garden_binary'].replace(0, np.nan)
         return data
     
     # © Felicia Betten
@@ -34,9 +41,11 @@ class DataCleaner(object):
         print("Funda data 2020 cleaned")
 
     # © Robin Kratschmayr
+    @staticmethod
     def clean_broker_info(data):
         #dropping columns url & replacing the word 'missing' with a 0 to be able to transform col as integer
         data = data.drop(columns=['url']).replace('Missing',0)
+        data = data.drop(columns=['url']).replace('Missing',np.nan)
         #replacing the whitespace in the middle of the postcode to be able to link with other cbs data
         data['zipcode_broker'] = data.zipcode_broker.replace(" ", "", regex=True)
         #removing unnecessary whitespaces in the broker description
@@ -51,6 +60,10 @@ class DataCleaner(object):
             'number_reviews_broker': 'int64',
             'number_houses_for_sale_offered': 'int64',
             'number_houses_sold_last_12_months': 'int64'}
+            'number_reviews_broker': 'Float64',# has to be converted to float since the column contains NaN values that are not convertible to int
+            'number_houses_for_sale_offered': 'Float64',
+            'number_houses_sold_last_12_months': 'Float64',
+            }
 
         for k,v in type_dict.items():
             data = data.astype({k: v})
@@ -58,6 +71,7 @@ class DataCleaner(object):
         return data
 
     # © Robin Kratschmayr
+    @staticmethod
     def clean_broker_reviews(data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)
@@ -65,4 +79,31 @@ class DataCleaner(object):
         data = data.rename(columns={'SalesAgent':'Broker'})
         #transforming the reviewdate into datetimeformat
         data['ReviewDate'] = pd.to_datetime(data['ReviewDate'])
+        return data
+
+    # © Emmanuel Owusu Annim
+    @staticmethod
+    def clean_tourist_info(data):
+        #Translate Dutch Headers to English Headers
+        full_path = os.path.join(self.base_folder, 'data/raw/tourist_info.csv')
+        data = pd.read_csv(full_path, sep=";")
+        data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
+        return data
+            
+    # © Emmanuel Owusu Annim
+    @staticmethod
+    def clean_crime_info(data):
+        #Translate Dutch Headers to English Headers
+        full_path = os.path.join(self.base_folder, 'data/raw/crime_data.csv')
+        data = pd.read_csv(full_path, sep=";")
+        data = data.rename(columns={'SoortMisdrijf': 'CrimeType', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'TotaalGeregistreerdeMisdrijven_1': 'Total Registered Crimes', 'GeregistreerdeMisdrijvenRelatief_2': 'Registered Crimes Relative', 'GeregistreerdeMisdrijvenPer1000Inw_3': 'Registered CrimesPer1000Inw', 'TotaalOpgehelderdeMisdrijven_4': 'TotalClearedCrimes', 'OpgehelderdeMisdrijvenRelatief_5': 'ClearedCrimesRelative', 'RegistratiesVanVerdachten_6': 'RegistrationsofSuspects'})
+        return data
+            
+    # © Emmanuel Owusu Annim
+    @staticmethod
+    def clean_labour_info(data):
+        #Translate Dutch Headers to English Headers
+        full_path = os.path.join(self.base_folder, 'data/raw/labour_market_info.csv')
+        data = pd.read_csv(full_path, sep=";")
+        data = data.rename(columns={'Onderwijsvolgend': 'Educational', 'KenmerkenArbeid': 'Characteristics Labor', 'Uitkering': 'Payment', 'IngeschrevenUWVWerkbedrijf':'RegisteredUWVWerkbedrijf', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Jongeren15Tot27Jaar_1':'Youth15To27Year' })
         return data

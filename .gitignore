@@ -6,3 +6,8 @@ __pycache__
 /forecasting.egg-info
 /build
 /dist
+.vscode/settings.json
+funda/felicia.py
+notebooks/tensorflow.ipynb
+.vscode/settings.json
+.vscode

@@ -15,30 +15,28 @@ class DataCleaner(object):
         data.drop(axis=1, columns='Ownership situation')
         # Remove m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-        return data
-
         # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
         data['housetype'] = df_funda_2020['housetype'].str.rstrip('\r\n')
         # Replace 0 in Garden_binary with NaN
-        data['garden_binary'] = data['garden_binary'].replace(0, np.nan)
-        return data
+        data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
     
-    # © Felicia Betten
-    def calculate_mean_yearofbuilding_funda_2020(self, date):
-        date = date.replace('After ', '') # replace 'After ' with empty
-        date = date.replace('Before ', '') # replace 'Before ' with empty
-        if "-" in date: # check whether there is a '-' in the column
-            date = date.split("-") # if yes, split the two dates
-            date = (int(date[0]) + int(date[1])) / 2 # calculate the mean of the two dates
-            return(int(date)) # return the mean date
-        else:
-            return int(date) # if not, return the only date
+        # © Felicia Betten
+        def calculate_mean_yearofbuilding_funda_2020(self, date):
+            date = date.replace('After ', '') # replace 'After ' with empty
+            date = date.replace('Before ', '') # replace 'Before ' with empty
+            if "-" in date: # check whether there is a '-' in the column
+                date = date.split("-") # if yes, split the two dates
+                date = (int(date[0]) + int(date[1])) / 2 # calculate the mean of the two dates
+                return(int(date)) # return the mean date
+            else:
+                return int(date) # if not, return the only date
 
-        # apply function to each row of the column 
-        data['yearofbuilding'].apply(lambda date: self.calculate_mean_yearofbuilding_funda_2020(date))
+            # apply function to each row of the column 
+        data['yearofbuilding'] = data['yearofbuilding'].apply(lambda date: self.calculate_mean_yearofbuilding_funda_2020(date))
         print("Funda data 2020 cleaned")
+        return data
 
     # © Robin Kratschmayr
     @staticmethod
@@ -85,8 +83,6 @@ class DataCleaner(object):
     @staticmethod
     def clean_tourist_info(data):
         #Translate Dutch Headers to English Headers
-        full_path = os.path.join(self.base_folder, 'data/raw/tourist_info.csv')
-        data = pd.read_csv(full_path, sep=";")
         data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
         return data
             
@@ -94,8 +90,6 @@ class DataCleaner(object):
     @staticmethod
     def clean_crime_info(data):
         #Translate Dutch Headers to English Headers
-        full_path = os.path.join(self.base_folder, 'data/raw/crime_data.csv')
-        data = pd.read_csv(full_path, sep=";")
         data = data.rename(columns={'SoortMisdrijf': 'CrimeType', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'TotaalGeregistreerdeMisdrijven_1': 'Total Registered Crimes', 'GeregistreerdeMisdrijvenRelatief_2': 'Registered Crimes Relative', 'GeregistreerdeMisdrijvenPer1000Inw_3': 'Registered CrimesPer1000Inw', 'TotaalOpgehelderdeMisdrijven_4': 'TotalClearedCrimes', 'OpgehelderdeMisdrijvenRelatief_5': 'ClearedCrimesRelative', 'RegistratiesVanVerdachten_6': 'RegistrationsofSuspects'})
         return data
             
@@ -103,7 +97,5 @@ class DataCleaner(object):
     @staticmethod
     def clean_labour_info(data):
         #Translate Dutch Headers to English Headers
-        full_path = os.path.join(self.base_folder, 'data/raw/labour_market_info.csv')
-        data = pd.read_csv(full_path, sep=";")
         data = data.rename(columns={'Onderwijsvolgend': 'Educational', 'KenmerkenArbeid': 'Characteristics Labor', 'Uitkering': 'Payment', 'IngeschrevenUWVWerkbedrijf':'RegisteredUWVWerkbedrijf', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Jongeren15Tot27Jaar_1':'Youth15To27Year' })
         return data

@@ -12,6 +12,7 @@ class DataLoader(object):
     def load_funda_data_2018(self):
         full_path = os.path.join(self.base_folder, 'data/raw/funda_2018.csv')
         data = pd.read_csv(full_path)
+
         return data
     
     #Robin

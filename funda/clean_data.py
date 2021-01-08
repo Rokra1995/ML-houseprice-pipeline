@@ -63,8 +63,6 @@ class DataCleaner(object):
         #Replace the 0 in Parcelsruface with NaN
         data['parcelSurface'] = data['parcelSurface'].replace(0.0, np.nan)
 
-        #CALCULATE THE MEAN OF VERY OLD YEAR OF BUILDINGS
-        @staticmethod
         def mean_yearofBuilding_funda_2018(date):
             date = date.replace('<{Voor}> ', '')
             date = date.replace('<{Na}> ', '')
@@ -136,4 +134,9 @@ class DataCleaner(object):
     def clean_labour_info(data):
         #Translate Dutch Headers to English Headers
         data = data.rename(columns={'Onderwijsvolgend': 'Educational', 'KenmerkenArbeid': 'Characteristics Labor', 'Uitkering': 'Payment', 'IngeschrevenUWVWerkbedrijf':'RegisteredUWVWerkbedrijf', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Jongeren15Tot27Jaar_1':'Youth15To27Year' })
+ 
+    # © Robin Kratschmayr
+    @staticmethod
+    def clean_cbs_postcodes(data):
+        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','GM_2020':'MunicipalityCode','WK_2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
         return data

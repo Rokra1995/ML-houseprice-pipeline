@@ -80,8 +80,7 @@ class DataCleaner(object):
     @staticmethod
     def clean_broker_info(data):
         #dropping columns url & replacing the word 'missing' with a 0 to be able to transform col as integer
-        data = data.drop(columns=['url']).replace('Missing',0)
-        data = data.drop(columns=['url']).replace('Missing',np.nan)
+        data = data.replace('Missing',0)
         #replacing the whitespace in the middle of the postcode to be able to link with other cbs data
         data['zipcode_broker'] = data.zipcode_broker.replace(" ", "", regex=True)
         #removing unnecessary whitespaces in the broker description

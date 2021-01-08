@@ -138,5 +138,12 @@ class DataCleaner(object):
     # © Robin Kratschmayr
     @staticmethod
     def clean_cbs_postcodes(data):
-        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','GM_2020':'MunicipalityCode','WK_2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
+        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','Gemeente2020':'Municipalitycode','Wijk2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
+        return data
+
+    # © Felicia Betten
+    @staticmethod
+    def clean_brt_2020(data):
+        data = data.rename(columns={'buurtcode2020':'NeighborhoodCode','buurtnaam2020':'NeighborhoodName','GM_2020':'Municipalitycode','GM_NAAM':'MunicipalityName','WK_2020':'DistrictCode','WK_NAAM':'DistrictName'})
+        data = data.drop(axis=1, columns='WK2020')
         return data

@@ -9,7 +9,9 @@ setup(
         "pandas",
         "numpy",
         "plotnine",
-        "scikit-learn"
+        "scikit-learn",
+        "tensorflow",
+        "matplotlib",
     ],
     python_requires="==3.8.5"
 )

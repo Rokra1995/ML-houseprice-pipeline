@@ -1,9 +1,9 @@
+
 '''This module contains the class to clean all the data 
 ''' 
 
 import pandas as pd
 import numpy as np
-
 
 class DataCleaner(object):
 
@@ -22,7 +22,6 @@ class DataCleaner(object):
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
     
-        @staticmethod
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty
             date = date.replace('Before ', '') # replace 'Before ' with empty

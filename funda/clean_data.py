@@ -138,3 +138,7 @@ class DataCleaner(object):
     def clean_cbs_postcodes(data):
         data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','GM_2020':'MunicipalityCode','WK_2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
         return data
+
+    @staticmethod
+    def clean_cbs_info(data):
+        return data

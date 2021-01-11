@@ -12,7 +12,7 @@ class DataLoader(object):
     #Emmanuel
     def load_funda_data_2018(self):
         full_path = os.path.join(self.base_folder, 'data','raw','funda_2018.csv')
-        data = pd.read_csv(full_path, dtype=self.funda_2018_dtypes)
+        data = pd.read_csv(full_path)
         
         #RENAMING COLUMNS INTO ENGLISH
         data = data.rename(columns={'publicatieDatum':'publicationDate','postcode':'zipcode', 'koopPrijs':'sellingPrice',\

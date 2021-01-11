@@ -9,18 +9,16 @@ class DataCleaner(object):
     # © Felicia Betten
     def clean_funda_2020(self, data):
         # Replace all None values by NaN
-        data = data.replace(to_replace="None", value=np.nan, inplace=True)
+        data = data.replace("None", np.NaN)
         # Drop column Ownership situation
         data.drop(axis=1, columns='Ownership situation')
         # Remove m³ removed from parcelsurface  
-        data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-        # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
         data['housetype'] = data['housetype'].str.rstrip('\r\n')
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
-    
+
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty
             date = date.replace('Before ', '') # replace 'Before ' with empty
@@ -39,35 +37,35 @@ class DataCleaner(object):
     # © Baris Orman
     @staticmethod
     def cleaned_funda_2018(data):
-      #Renaming the columns to english
-      data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
+        #Renaming the columns to english
+        data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
 
-      #HOUSETYPE AND CATEGORYOBJECT: SEPERATE THE VARIABALES WITH COMMA'S AND REMOVE THE BRACKETS
-      data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
-      data['categoryObject'] = data['categoryObject'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
-      data['fullDescription'] = data['fullDescription'].str.replace("\n", "")
+        #HOUSETYPE AND CATEGORYOBJECT: SEPERATE THE VARIABALES WITH COMMA'S AND REMOVE THE BRACKETS
+        data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
+        data['categoryObject'] = data['categoryObject'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
+        data['fullDescription'] = data['fullDescription'].str.replace("\n", "")
 
-      #Calculation of sellingtime and adding the column
-      data['sellingTime'] = pd.to_datetime(data['sellingDate']) - pd.to_datetime(data['publicationDate'])
-      data['sellingTime'] = data['sellingTime'].apply(lambda x: int(x.days))
+        #Calculation of sellingtime and adding the column
+        data['sellingTime'] = pd.to_datetime(data['sellingDate']) - pd.to_datetime(data['publicationDate'])
+        data['sellingTime'] = data['sellingTime'].apply(lambda x: int(x.days))
 
-      #Replace the 0 in Parcelsruface with NaN
-      data['parcelSurface'] = data['parcelSurface'].replace(0.0, np.nan)
+        #Replace the 0 in Parcelsruface with NaN
+        data['parcelSurface'] = data['parcelSurface'].replace(0.0, np.nan)
 
-          #CALCULATE THE MEAN OF VERY OLD YEAR OF BUILDINGS
-          def mean_yearofBuilding_funda_2018(date):
-              date = date.replace('<{Voor}> ', '')
-              date = date.replace('<{Na}> ', '')
-              if '-' in date:
-                  date = date.split("-")
-                  date = (int(date[0]) + int(date[1])) / 2
-                  return(int(date))
-              else:
-                  return int(date)
+        #CALCULATE THE MEAN OF VERY OLD YEAR OF BUILDINGS
+        def mean_yearofBuilding_funda_2018(date):
+            date = date.replace('<{Voor}> ', '')
+            date = date.replace('<{Na}> ', '')
+            if '-' in date:
+                date = date.split("-")
+                date = (int(date[0]) + int(date[1])) / 2
+                return(int(date))
+            else:
+                return int(date)
 
-      data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: mean_yearofBuilding_funda_2018(date))
-      print("Funda data 2018 cleaned")
-      return data
+        data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: mean_yearofBuilding_funda_2018(date))
+        print("Funda data 2018 cleaned")
+        return data
 
 
     # © Robin Kratschmayr

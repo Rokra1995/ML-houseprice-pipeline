@@ -111,9 +111,20 @@ def main():
         broker_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
 
         print("data loaded, cleaned and saved")
+    
+    ## IN CASE OF PERFORMANCE PROBLEMS OVERWRITE THE UNCLEANED DATAFRAMES with 0
+    '''
+    funda_2018 = 0
+    funda_2020 = 0
+    cbs_info = 0
+    cbs_postcodes = 0
+    crime_info = 0
+    tourist_info = 0
+    broker_info = 0
+    '''
 
     ## CREATE MODELLING FEATURES 
-    gt = 0
+    featurize = Featurizer()
 
     ## CREATE TRAIN AND TEST SET
     train, test = train_test_split(gt, test_size=0.4)

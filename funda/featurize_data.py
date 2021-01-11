@@ -23,24 +23,36 @@ import datetime
 
 # © Felicia Betten
 def featurize_funda_2018 (self, data):
-    # create column with publication month
-    data['publicationMonth'] = pd.DatetimeIndex(data['publicationDate']).month
-    # create column with publication day
-    data['publicationDate'] = pd.DatetimeIndex(data['publicationDate']).day
+    # create column with publication day, month and year
+    funda_2018_cleaned['publicationDay'] = pd.DatetimeIndex(funda_2018_cleaned['publicationDate']).day
+    funda_2018_cleaned['publicationMonth'] = pd.DatetimeIndex(funda_2018_cleaned['publicationDate']).month
+    funda_2018_cleaned['publicationYear'] = pd.DatetimeIndex(funda_2018_cleaned['publicationDate']).year
     # dummy code categoryObject & energylabelClass
-    data = pd.get_dummies(data=data, columns=['categoryObject', 'energylabelClass'])
-    # drop columns sellingTime and selling date
-    data = data.drop(columns=['sellingPrice', 'sellingTime', 'sellingDate'])
+    pd.get_dummies(data=funda_2018_cleaned, columns=['categoryObject', 'energylabelClass'])
+    # drop columns publicationDate, sellingPrice, sellingTime and sellingDate
+    funda_2018_cleaned = funda_2018_cleaned.drop(columns=['publicationDate', 'sellingPrice', 'sellingTime', 'sellingDate'])
     # combine csv files funda_2018 and pc6-gwb2020 (postcodes), join them on zipcode
-    data = data.join(data.set_index('zipcode'), on='zipcode')
+    funda_zipcode_df = funda_2018_cleaned.join(zipcode_data_cleaned.set_index('zipcode'), on='zipcode')
     # combine csv files funda_2018, pc6-gwb2020 and brt, join them on NeighborhoodCode
     # right: use only keys from right frame, similar to a SQL right outer join; preserve key order.
-    data = data.merge(data, on='NeighborhoodCode', how='right')
+    funda_zipcode_brt_df = funda_zipcode_df.merge(brt_data_cleaned, on='NeighborhoodCode', how='right')
     # drop columns NeighborhoodCode, DistrictCode_x, Municipalitycode_x and exclude _y from columns names
-    data = data.drop(columns=['NeighborhoodCode', 'DistrictCode_x', 'Municipalitycode_x']).rename(columns={'Municipalitycode_y':'Municipalitycode', 'DistrictCode_y':'DistrictCode'})
+    funda_zipcode_brt_df = funda_zipcode_brt_df.drop(columns=['NeighborhoodCode', 'DistrictCode_x', 'Municipalitycode_x']).rename(columns={'Municipalitycode_y':'Municipalitycode', 'DistrictCode_y':'DistrictCode'})
     
-    # option to dummy code the types of houseType seperating by space, but that's not optimal
-    # funda_2018_cleaned['houseType'].str.get_dummies(sep=' ').columns
+    # create new dataframe with houseTypes dummy codes
+    houseTypes_df = funda_2018_cleaned['houseType'].str.get_dummies(sep=",")
+    # join houseType_df with funda_2018
+    joined_df = funda_2018_cleaned.join(houseTypes_df, how='right').drop(axis=1, columns='houseType')
+    # combine csv files funda_2018, pc6-gwb2020 (postcodes), join them on zipcode
+    funda_zipcode_df = joined_df.join(zipcode_data_cleaned.set_index('zipcode'), on='zipcode')
+    # combine csv files funda_2018, pc6-gwb2020 and brt, join them on NeighborhoodCode
+    # right: use only keys from right frame, similar to a SQL right outer join; preserve key order.
+    funda_zipcode_brt_df = funda_zipcode_df.merge(brt_data_cleaned, on='NeighborhoodCode', how='right')
+    # drop columns NeighborhoodCode, DistrictCode_x, Municipalitycode_x, NeighborhoodName, MunicipalityName and DistrictName and exclude _y from columns names
+    funda_zipcode_brt_df = funda_zipcode_brt_df.drop(columns=['NeighborhoodCode', 'DistrictCode_x', 'Municipalitycode_x', 'NeighborhoodName', 'MunicipalityName', 'DistrictName']).rename(columns={'Municipalitycode_y':'Municipalitycode', 'DistrictCode_y':'DistrictCode'})
+    # replace NaN in parcelSurface with the mean of the Municpality 
+    funda_zipcode_brt_df['parcelSurface'] = funda_zipcode_brt_df.groupby("Municipalitycode").transform(lambda x: x.fillna(x.mean()))
+    # dummy code Municipalitycode and DistrictCode
+    funda_zipcode_brt_df = pd.get_dummies(funda_zipcode_brt_df, columns=['Municipalitycode', 'DistrictCode'])
 
-
-    return data
+    return funda_zipcode_brt_df

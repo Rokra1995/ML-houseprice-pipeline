@@ -8,21 +8,19 @@ import numpy as np
 class DataCleaner(object):
 
     # © Felicia Betten
-    def clean_funda_2020(self, data):
+    @staticmethod
+    def clean_funda_2020(data):
         # Replace all None values by NaN
-        data = data.replace(to_replace="None", value=np.nan, inplace=True)
+        data = data.replace("None", np.NaN)
         # Drop column Ownership situation
-        data.drop(axis=1, columns='Ownership situation')
+        data = data.drop(columns=['Ownership situation', 'Cadastre_Title'])
         # Remove m³ removed from parcelsurface  
-        data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-        # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
         data['housetype'] = data['housetype'].str.rstrip('\r\n')
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
     
-        @staticmethod
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty
             date = date.replace('Before ', '') # replace 'Before ' with empty
@@ -52,7 +50,7 @@ class DataCleaner(object):
         data['sellingDate'] = pd.to_datetime(data['sellingDate'])
 
         #HOUSETYPE AND CATEGORYOBJECT: SEPERATE THE VARIABALES WITH COMMA'S AND REMOVE THE BRACKETS
-        data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
+        data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', ",").str.replace('>', "").str.replace('(', "").str.replace(')', "").str.replace(' ', '')
         data['categoryObject'] = data['categoryObject'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
         data['fullDescription'] = data['fullDescription'].str.replace("\n", "")
 

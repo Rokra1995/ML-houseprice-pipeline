@@ -1,10 +1,10 @@
 data
 __pycache__
 *.csv
-/.vscode
+.vscode/
 /build
 /dist
-/.vscode/settings.json
+.vscode/settings.json
 funda/felicia.py
 test.py
-/funda.egg-info
+funda.egg-info/

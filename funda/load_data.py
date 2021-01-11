@@ -90,8 +90,3 @@ class DataLoader(object):
         data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
         print('tourist info successfully loaded')
         return data
-
-data_loader = DataLoader(base_folder=r'C:\\Users\\B.R\\Documents\\HvA\\Master DBB\AI for Business\\product3team2')
-data = data_loader.load_funda_data_2020()
-print(data.head())
-print(data_2020.dtypes)

@@ -5,19 +5,19 @@ class Featurizer(object):
 
     # © Felicia Betten
     @staticmethod
-    def featurize_funda_data(data):
+    def funda_data(data):
 
         return data
 
     # © Emmanuel Owusu Annim
     @staticmethod
-    def featurize_cbs_data(data):
+    def cbs_data(data):
 
         return data
 
     # © Robin Kratschmayr
     @staticmethod
-    def featurize_broke_info(broker_info):
+    def broker_info(broker_info):
         broker_features = broker_info.drop(columns=['zipcode_broker','description_broker','url'])
         return broker_features
 
@@ -30,4 +30,5 @@ class Featurizer(object):
         data = data.merge(brokers, how="left", left_on="Sales_Agent", right_on="Broker_name")
         data = data.merge(brokers, how="left", left_on="buy_Agent", right_on="Broker_name", suffixes=['Sale','Buy'])
         return data
+    
 

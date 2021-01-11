@@ -2,12 +2,9 @@ data
 __pycache__
 *.csv
 /.vscode
-/forecasting_study.egg-info
-/forecasting.egg-info
 /build
 /dist
-.vscode/settings.json
+/.vscode/settings.json
 funda/felicia.py
-notebooks/tensorflow.ipynb
-.vscode/settings.json
-.vscode
+test.py
+/funda.egg-info

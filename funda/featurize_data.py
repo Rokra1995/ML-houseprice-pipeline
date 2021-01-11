@@ -21,8 +21,13 @@ class Featurizer(object):
         broker_features = broker_info.drop(columns=['zipcode_broker','description_broker','url'])
         return broker_features
 
-    # © to be discussed
+    # © Robin Kratschmayr
     @staticmethod
     def combine_featurized_data(funda,cbs,brokers):
-        pass
+        # merging columns need to be changed
+        data = funda.merge(cbs, how="left", left_on="Municipality_code", right_on="Municipality_code")
+        data = data.merge(cbs, how="left", left_on="district_code", right_on="district_code", suffixes=['GM','WK'])
+        data = data.merge(brokers, how="left", left_on="Sales_Agent", right_on="Broker_name")
+        data = data.merge(brokers, how="left", left_on="buy_Agent", right_on="Broker_name", suffixes=['Sale','Buy'])
+        return data
 

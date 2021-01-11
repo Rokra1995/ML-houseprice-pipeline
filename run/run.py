@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 from funda.load_data import DataLoader
 from funda.clean_data import DataCleaner
@@ -113,6 +113,10 @@ def main():
         print("data loaded, cleaned and saved")
 
     ## CREATE MODELLING FEATURES 
+    gt = 0
+
+    ## CREATE TRAIN AND TEST SET
+    train, test = train_test_split(gt, test_size=0.4)
     '''
     ## CREATE TRAIN AND TEST SETS AND CV SPLITS
     validation_mapping = DataPartitioner().partition_data(power_df)

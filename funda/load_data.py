@@ -29,7 +29,8 @@ class DataLoader(object):
     #Robin
     def load_funda_data_2020(self):
         full_path = os.path.join(self.base_folder, 'data','raw','funda_2020_sold_houses.csv')
-        data = pd.read_csv(full_path)    
+        data = pd.read_csv(full_path)
+        data = data.rename(columns={'yearofbuilding':'yearOfBuilding'})
         print('Funda data of 2020 successfully loaded')
         return data
 
@@ -52,7 +53,7 @@ class DataLoader(object):
     def load_cbs_data(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'CBS_data.csv')
         data = pd.read_csv(full_path, sep=";")
-        data = data.rename(columns={'WijkenEnBuurten':'NeighborhoodsAndDistricts','Gemeentenaam_1':'NameOfMunicipality','Mannen_6':'NumberOfMen',\
+        data = data.rename(columns={'WijkenEnBuurten':'Municipalitycode','Gemeentenaam_1':'NameOfMunicipality','Mannen_6':'NumberOfMen',\
     'Vrouwen_7':'NumberOfWomen','k_0Tot15Jaar_8':'AgeFrom0to15years','k_15Tot25Jaar_9':'AgeFrom15to25years',\
     'k_25Tot45Jaar_10' : 'AgeFrom25to45years','k_45Tot65Jaar_11' : 'AgeFrom45to65years','k_65JaarOfOuder_12' : 'AgeFrom65AndOlder',\
     'Bevolkingsdichtheid_33' : 'PopulationDensity','Woningvoorraad_34' : 'HousingStock','PercentageBewoond_38' : 'PercentageInhabited',\
@@ -66,20 +67,17 @@ class DataLoader(object):
     def load_cbs_postcodes(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'pc6-gwb2020.csv')
         data = pd.read_csv(full_path, sep=";")
-        data = data.rename(columns={'PC6': 'Zipcode', 'Buurt2020': 'NeighborhoodCode', 'Wijk2020': 'DistrictCode', 'Gemeente2020': 'MunicipalityCode'})
+        data = data.rename(columns={'PC6': 'zipcode', 'Buurt2020': 'NeighborhoodCode', 'Wijk2020': 'DistrictCode', 'Gemeente2020': 'MunicipalityCode'})
         print('cbs postcodes successfully loaded')
         return data
-
-    #Robin
-    def load_funda_images(self):
-        # here the code to load raw data from base folder is implemented
-        raise NotImplementedError('Not yet implemented')
 
     #Emmanuel
     def load_crime_data(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'crime_data.csv')
         data = pd.read_csv(full_path, sep=";")
-        data = data.rename(columns={'SoortMisdrijf': 'CrimeType', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'TotaalGeregistreerdeMisdrijven_1': 'Total Registered Crimes', 'GeregistreerdeMisdrijvenRelatief_2': 'Registered Crimes Relative', 'GeregistreerdeMisdrijvenPer1000Inw_3': 'Registered CrimesPer1000Inw', 'TotaalOpgehelderdeMisdrijven_4': 'TotalClearedCrimes', 'OpgehelderdeMisdrijvenRelatief_5': 'ClearedCrimesRelative', 'RegistratiesVanVerdachten_6': 'RegistrationsofSuspects'})
+        #Drop unnecessary columns
+        data = data.drop(columns=['ID','SoortMisdrijf','Perioden'])
+        data = data.rename(columns={'RegioS': 'Municipalitycode', 'TotaalGeregistreerdeMisdrijven_1': 'Total Registered Crimes', 'GeregistreerdeMisdrijvenRelatief_2': 'Registered Crimes Relative', 'GeregistreerdeMisdrijvenPer1000Inw_3': 'Registered CrimesPer1000Inw', 'TotaalOpgehelderdeMisdrijven_4': 'TotalClearedCrimes', 'OpgehelderdeMisdrijvenRelatief_5': 'ClearedCrimesRelative', 'RegistratiesVanVerdachten_6': 'RegistrationsofSuspects'})
         print('crime data successfully loaded')
         return data
 
@@ -87,7 +85,8 @@ class DataLoader(object):
     def load_tourist_info(self):
         full_path = os.path.join(self.base_folder, 'data','raw','tourist_info.csv')
         data = pd.read_csv(full_path, sep=";")
-        data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
+        data = data.drop(columns=['WoonlandVanGasten','ID','Perioden'])
+        data = data.rename(columns={'RegioS': 'Municipalitycode', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
         print('tourist info successfully loaded')
         return data
 

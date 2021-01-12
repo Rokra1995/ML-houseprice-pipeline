@@ -31,7 +31,7 @@ class DataCleaner(object):
                 return int(date) # if not, return the only date
 
             # apply function to each row of the column 
-        data['yearofbuilding'] = data['yearofbuilding'].apply(lambda date: calculate_mean_yearofbuilding_funda_2020(date))
+        data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: calculate_mean_yearofbuilding_funda_2020(date))
         print("Funda data 2020 cleaned")
         return data
     
@@ -115,14 +115,23 @@ class DataCleaner(object):
     # © Emmanuel Owusu Annim
     @staticmethod
     def clean_crime_info(data):
-        #Translate Dutch Headers to English Headers
+        # Each gemeente has several crime info, out of time reasons we can only input the total amount of registered crimes into the model
+        data = data.groupby(['Municipalitycode']).sum().reset_index().fillna(-1)
+        return data
+
+    # © Robin Kratschmayr
+    def clean_cbs_info(data):
+        data = data.drop(columns=['ID','NameOfMunicipality','Codering_3','MostCommonPostalCode'])
+        data = data.replace("       .", -1)
+        data = data.replace("         .", -1)
+        data['Municipalitycode'] = data['Municipalitycode'].str.strip()
         return data
             
 
     # © Robin Kratschmayr
     @staticmethod
     def clean_cbs_postcodes(data):
-        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','Gemeente2020':'Municipalitycode','Wijk2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
+        data = data.astype({'NeighborhoodCode':'Int64'}).drop_duplicates(subset='zipcode', keep="first")
         return data
 
     # © Felicia Betten
@@ -130,4 +139,5 @@ class DataCleaner(object):
     def clean_brt_2020(data):
         data = data.rename(columns={'buurtcode2020':'NeighborhoodCode','buurtnaam2020':'NeighborhoodName','GM_2020':'Municipalitycode','GM_NAAM':'MunicipalityName','WK_2020':'DistrictCode','WK_NAAM':'DistrictName'})
         data = data.drop(axis=1, columns='WK2020')
+        data = data.drop(columns=['NeighborhoodName'])
         return data

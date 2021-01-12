@@ -17,7 +17,7 @@ class DataCleaner(object):
         # Remove m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
-        data['housetype'] = data['housetype'].str.rstrip('\r\n')
+        data['housetype'] = data['housetype'].str.rstrip('\r\n').str.replace(' ', '')
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
     

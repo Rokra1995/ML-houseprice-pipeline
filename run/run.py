@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 from funda.load_data import DataLoader
 from funda.clean_data import DataCleaner
@@ -111,8 +111,23 @@ def main():
         broker_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
 
         print("data loaded, cleaned and saved")
+    
+    ## IN CASE OF PERFORMANCE PROBLEMS OVERWRITE THE UNCLEANED DATAFRAMES with 0
+    '''
+    funda_2018 = 0
+    funda_2020 = 0
+    cbs_info = 0
+    cbs_postcodes = 0
+    crime_info = 0
+    tourist_info = 0
+    broker_info = 0
+    '''
 
     ## CREATE MODELLING FEATURES 
+    featurize = Featurizer()
+
+    ## CREATE TRAIN AND TEST SET
+    train, test = train_test_split(gt, test_size=0.4)
     '''
     ## CREATE TRAIN AND TEST SETS AND CV SPLITS
     validation_mapping = DataPartitioner().partition_data(power_df)

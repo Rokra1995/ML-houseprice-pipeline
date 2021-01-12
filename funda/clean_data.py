@@ -1,6 +1,5 @@
-
-'''This module contains the class to clean all the data 
-''' 
+'''This module contains classes to clean the data 
+'''
 
 import pandas as pd
 import numpy as np
@@ -10,18 +9,16 @@ class DataCleaner(object):
     # © Felicia Betten
     def clean_funda_2020(self, data):
         # Replace all None values by NaN
-        data = data.replace(to_replace="None", value=np.nan, inplace=True)
+        data = data.replace("None", np.NaN)
         # Drop column Ownership situation
         data.drop(axis=1, columns='Ownership situation')
         # Remove m³ removed from parcelsurface  
-        data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
-        # m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
         data['housetype'] = data['housetype'].str.rstrip('\r\n')
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
-    
+
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty
             date = date.replace('Before ', '') # replace 'Before ' with empty
@@ -41,14 +38,7 @@ class DataCleaner(object):
     @staticmethod
     def cleaned_funda_2018(data):
         #Renaming the columns to english
-        data = data.fillna(0).rename(columns={'publicatieDatum':'publicationDate','postcode':'zipcode', 'koopPrijs':'sellingPrice',\
-          'volledigeOmschrijving':'fullDescription','soortWoning':'houseType','categorieObject':'categoryObject', 'bouwjaar':'yearOfBuilding', \
-          'indTuin':'garden','perceelOppervlakte':'parcelSurface','aantalKamers':'numberRooms','aantalBadkamers':'numberBathrooms',   'energielabelKlasse':'energylabelClass',\
-          'oppervlakte':'surface','datum_ondertekening':'sellingDate'}).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
-
-        #Changing dataypes for publication date and selling date
-        data['publicationDate'] = pd.to_datetime(data['publicationDate'])
-        data['sellingDate'] = pd.to_datetime(data['sellingDate'])
+        data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
 
         #HOUSETYPE AND CATEGORYOBJECT: SEPERATE THE VARIABALES WITH COMMA'S AND REMOVE THE BRACKETS
         data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
@@ -62,6 +52,7 @@ class DataCleaner(object):
         #Replace the 0 in Parcelsruface with NaN
         data['parcelSurface'] = data['parcelSurface'].replace(0.0, np.nan)
 
+        #CALCULATE THE MEAN OF VERY OLD YEAR OF BUILDINGS
         def mean_yearofBuilding_funda_2018(date):
             date = date.replace('<{Voor}> ', '')
             date = date.replace('<{Na}> ', '')
@@ -75,6 +66,7 @@ class DataCleaner(object):
         data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: mean_yearofBuilding_funda_2018(date))
         print("Funda data 2018 cleaned")
         return data
+
 
     # © Robin Kratschmayr
     @staticmethod
@@ -117,28 +109,11 @@ class DataCleaner(object):
     @staticmethod
     def clean_tourist_info(data):
         #Translate Dutch Headers to English Headers
-        data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
         return data
             
     # © Emmanuel Owusu Annim
     @staticmethod
     def clean_crime_info(data):
         #Translate Dutch Headers to English Headers
-        data = data.rename(columns={'SoortMisdrijf': 'CrimeType', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'TotaalGeregistreerdeMisdrijven_1': 'Total Registered Crimes', 'GeregistreerdeMisdrijvenRelatief_2': 'Registered Crimes Relative', 'GeregistreerdeMisdrijvenPer1000Inw_3': 'Registered CrimesPer1000Inw', 'TotaalOpgehelderdeMisdrijven_4': 'TotalClearedCrimes', 'OpgehelderdeMisdrijvenRelatief_5': 'ClearedCrimesRelative', 'RegistratiesVanVerdachten_6': 'RegistrationsofSuspects'})
         return data
             
-    # © Emmanuel Owusu Annim
-    @staticmethod
-    def clean_labour_info(data):
-        #Translate Dutch Headers to English Headers
-        data = data.rename(columns={'Onderwijsvolgend': 'Educational', 'KenmerkenArbeid': 'Characteristics Labor', 'Uitkering': 'Payment', 'IngeschrevenUWVWerkbedrijf':'RegisteredUWVWerkbedrijf', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Jongeren15Tot27Jaar_1':'Youth15To27Year' })
- 
-    # © Robin Kratschmayr
-    @staticmethod
-    def clean_cbs_postcodes(data):
-        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','GM_2020':'MunicipalityCode','WK_2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
-        return data
-
-    @staticmethod
-    def clean_cbs_info(data):
-        return data

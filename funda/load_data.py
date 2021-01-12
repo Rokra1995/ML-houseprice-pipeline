@@ -90,3 +90,10 @@ class DataLoader(object):
         data = data.rename(columns={'WoonlandVanGasten': 'Residential Land Of Guests', 'RegioS': 'Municipalitycode', 'Perioden': 'Periods', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
         print('tourist info successfully loaded')
         return data
+
+    #Felicia
+    def load_brt_2020(self):
+        full_path = os.path.join(self.base_folder, 'data/raw/brt2020.csv')
+        data = pd.read_csv(full_path, sep=";")
+        data = data.drop(axis=1, columns='GM2020')
+        return data

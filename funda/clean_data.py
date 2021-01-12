@@ -7,15 +7,16 @@ import numpy as np
 class DataCleaner(object):
 
     # © Felicia Betten
-    def clean_funda_2020(self, data):
+    @staticmethod
+    def clean_funda_2020(data):
         # Replace all None values by NaN
         data = data.replace("None", np.NaN)
         # Drop column Ownership situation
-        data.drop(axis=1, columns='Ownership situation')
+        data = data.drop(columns=['Ownership situation', 'Cadastre_Title'])
         # Remove m³ removed from parcelsurface  
         data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
-        data['housetype'] = data['housetype'].str.rstrip('\r\n')
+        data['housetype'] = data['housetype'].str.rstrip('\r\n').str.replace(' ', '')
         # Replace 0 in Garden_binary with NaN
         data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
 
@@ -41,7 +42,7 @@ class DataCleaner(object):
         data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
 
         #HOUSETYPE AND CATEGORYOBJECT: SEPERATE THE VARIABALES WITH COMMA'S AND REMOVE THE BRACKETS
-        data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
+        data['houseType'] = data['houseType'].str.replace('<', "").str.replace('{', "").str.replace('}', ",").str.replace('>', "").str.replace('(', "").str.replace(')', "").str.replace(' ', '')
         data['categoryObject'] = data['categoryObject'].str.replace('<', "").str.replace('{', "").str.replace('}', "").str.replace('>', "")
         data['fullDescription'] = data['fullDescription'].str.replace("\n", "")
 
@@ -117,3 +118,16 @@ class DataCleaner(object):
         #Translate Dutch Headers to English Headers
         return data
             
+
+    # © Robin Kratschmayr
+    @staticmethod
+    def clean_cbs_postcodes(data):
+        data = data.rename(columns={'PC6':'zipcode','Buurt2020':'NeighborhoodCode','Gemeente2020':'Municipalitycode','Wijk2020':'DistrictCode'}).astype({'NeighborhoodCode':'object'}).drop_duplicates(subset='zipcode', keep="first")
+        return data
+
+    # © Felicia Betten
+    @staticmethod
+    def clean_brt_2020(data):
+        data = data.rename(columns={'buurtcode2020':'NeighborhoodCode','buurtnaam2020':'NeighborhoodName','GM_2020':'Municipalitycode','GM_NAAM':'MunicipalityName','WK_2020':'DistrictCode','WK_NAAM':'DistrictName'})
+        data = data.drop(axis=1, columns='WK2020')
+        return data

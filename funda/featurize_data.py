@@ -95,10 +95,18 @@ class Featurizer(object):
     # © Emmanuel Owusu Annim
     @staticmethod
     def cbs_data(data):
+        #Here I fill NAN values with the MEAN and I printed a new data set called cbs_data
+        cbs_data = cbs_data_old.fillna(cbs_data_old())
+        cbs_data['Municipalitycode'] = cbs_data['Municipalitycode'].str.strip()
 
-        return data
+        #Here I merged the other data sets TouristData & Crimedata together on the key 'Municipalitycode'
+        merge1 = (pd.merge(crime_data, tourist_info, on='Municipalitycode'))
 
-    # © Robin Kratschmayr
+        #Here I merged the dataset cbs_data with Merge1 and make a complete datasett of all the data
+        all_data = cbs_data.merge(merge1, on='Municipalitycode', how='left').sort_values(['Municipalitycode']).fillna(-1)
+        return all_data
+
+   # © Robin Kratschmayr
     @staticmethod
     def broker_info(broker_info):
         broker_features = broker_info.drop(columns=['zipcode_broker','description_broker','url'])

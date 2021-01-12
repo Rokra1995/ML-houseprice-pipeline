@@ -11,7 +11,7 @@ try:
     from nltk.stem import WordNetLemmatizer 
 except Exception as e:
     print('Failed during package load. with error: ', e)
-    print('Attempting to download the required NLP modules')
+    print('Attempting to download the required NLP modules...')
     nltk.download('wordnet')
     nltk.download('stopwords')
     nltk.download('sentiwordnet')

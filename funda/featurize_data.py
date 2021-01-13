@@ -170,10 +170,11 @@ class Featurizer(object):
     # © Robin Kratschmayr
     @staticmethod
     def combine_featurized_data(funda,cbs_ft,broker_ft):
-        # merging columns need to be changed
-        data = funda.merge(cbs_ft, how="left", on="Municipalitycode")#, right_on="Municipalitycode")
+        # merging all the data
+        data = funda.merge(cbs_ft, how="left", on="Municipalitycode")
         data = data.merge(cbs_ft, how="left", left_on="DistrictCode", right_on="Municipalitycode", suffixes=['_GM','_WK'])
         data = data.merge(broker_ft, how="left", left_on="sales_agent", right_on="name_broker")
         data = data.merge(broker_ft, how="left", left_on="buying_agent", right_on="name_broker", suffixes=['_Sale','_Buy'])
+        #Drop columns that are not needed and replace ervy NaN with a -1
         data = data.drop(columns=['name_broker_Buy','name_broker_Sale','zipcode','fullDescription','Municipalitycode_GM','Municipalitycode_WK','DistrictCode','sales_agent','buying_agent']).fillna(-1)
         return data

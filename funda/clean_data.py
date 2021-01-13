@@ -120,6 +120,7 @@ class DataCleaner(object):
         return data
 
     # © Robin Kratschmayr
+    @staticmethod
     def clean_cbs_info(data):
         data = data.drop(columns=['ID','NameOfMunicipality','Codering_3','MostCommonPostalCode'])
         data = data.replace("       .", -1)

@@ -90,7 +90,7 @@ class Featurizer(object):
         return sentiment
 
     # © Felicia Betten
-    def funda_features(funda_2018, funda_2020,zipcode_data, brt_data):
+    def funda(self, funda_2018, funda_2020,zipcode_data, brt_data):
         ## CREATE FUNDA 2018 FEATURES
 
         ### create column with publication day, month and year
@@ -107,9 +107,9 @@ class Featurizer(object):
         ## CREATE FUNDA 2020 FEATURES
 
         # create column with publication day, month and year
-        funda_2020['publicationDay'] = pd.DatetimeIndex(funda_2020_cleaned['publicationDate']).day
-        funda_2020['publicationMonth'] = pd.DatetimeIndex(funda_2020_cleaned['publicationDate']).month
-        funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020_cleaned['publicationDate']).year
+        funda_2020['publicationDay'] = pd.DatetimeIndex(funda_2020['publicationDate']).day
+        funda_2020['publicationMonth'] = pd.DatetimeIndex(funda_2020['publicationDate']).month
+        funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
         # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
         # and rename columns to the same names in funda_2018
         funda_2020 = funda_2020.drop(columns=['publicationDate', 'sellingPrice', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
@@ -137,14 +137,18 @@ class Featurizer(object):
         # join houseType_df with funda_2018
         all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
         # create other dummies
-        all_data = pd.get_dummies(data=all_data, columns=['sales_agent', 'buying_agent','categoryObject', 'energylabelClass','Municipalitycode', 'DistrictCode'], dummy_na=True)
+        all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
+        all_data['DistrictCode_copy'] = all_data['DistrictCode']
+        all_data['sales_agent_copy'] = all_data['sales_agent']
+        all_data['buying_agent_copy'] = all_data['buying_agent']
+        all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy','categoryObject', 'energylabelClass','Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
         
         #all_data['parcelSurface'] = all_data.groupby("Municipalitycode").transform(lambda x: x.fillna(x.mean()))
         all_data = all_data.fillna(-1)
+        print('funda features created')
         return all_data
 
     # © Emmanuel Owusu Annim
-    @staticmethod
     def cbs_data(self, crime_data, tourist_info, cbs_data_old):
         #Fill NAN with Mean & Print new data set called cbs_data
         cbs_data = cbs_data_old.fillna(cbs_data_old.mean())
@@ -165,10 +169,11 @@ class Featurizer(object):
 
     # © Robin Kratschmayr
     @staticmethod
-    def combine_featurized_data(funda,cbs,brokers):
+    def combine_featurized_data(funda,cbs_ft,broker_ft):
         # merging columns need to be changed
-        data = funda.merge(cbs, how="left", left_on="Municipality_code", right_on="Municipality_code")
-        data = data.merge(cbs, how="left", left_on="district_code", right_on="district_code", suffixes=['GM','WK'])
-        data = data.merge(brokers, how="left", left_on="Sales_Agent", right_on="Broker_name")
-        data = data.merge(brokers, how="left", left_on="Buy_Agent", right_on="Broker_name", suffixes=['Sale','Buy'])
+        data = funda.merge(cbs_ft, how="left", on="Municipalitycode")#, right_on="Municipalitycode")
+        data = data.merge(cbs_ft, how="left", left_on="DistrictCode", right_on="Municipalitycode", suffixes=['_GM','_WK'])
+        data = data.merge(broker_ft, how="left", left_on="sales_agent", right_on="name_broker")
+        data = data.merge(broker_ft, how="left", left_on="buying_agent", right_on="name_broker", suffixes=['_Sale','_Buy'])
+        data = data.drop(columns=['name_broker_Buy','name_broker_Sale','zipcode','fullDescription','Municipalitycode_GM','Municipalitycode_WK','DistrictCode','sales_agent','buying_agent']).fillna(-1)
         return data

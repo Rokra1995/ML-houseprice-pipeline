@@ -136,6 +136,8 @@ class Featurizer(object):
         houseTypes = all_data['houseType'].str.get_dummies(sep=",").add_prefix('houseType_')
         # join houseType_df with funda_2018
         all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
+        # replace NaN of parcelsurface with mean per municipalitycode
+        all_data['parcelsurface'] = all_data['parcelsurface'].fillna(all_data.groupby('Municipalitycode')['parcelsurface'].transform('mean'))
         # create other dummies
         all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
         all_data['DistrictCode_copy'] = all_data['DistrictCode']
@@ -143,7 +145,7 @@ class Featurizer(object):
         all_data['buying_agent_copy'] = all_data['buying_agent']
         all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy','categoryObject', 'energylabelClass','Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
         
-        #all_data['parcelSurface'] = all_data.groupby("Municipalitycode").transform(lambda x: x.fillna(x.mean()))
+        # fill NaN's with -1
         all_data = all_data.fillna(-1)
         print('funda features created')
         return all_data

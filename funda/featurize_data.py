@@ -137,7 +137,7 @@ class Featurizer(object):
         # join houseType_df with funda_2018
         all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
         # replace NaN of parcelsurface with mean per municipalitycode
-        all_data['parcelsurface'] = all_data['parcelsurface'].fillna(all_data.groupby('Municipalitycode')['parcelsurface'].transform('mean'))
+        all_data['parcelSurface'] = all_data['parcelSurface'].fillna(all_data.groupby('Municipalitycode')['parcelSurface'].transform('mean'))
         # create other dummies
         all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
         all_data['DistrictCode_copy'] = all_data['DistrictCode']

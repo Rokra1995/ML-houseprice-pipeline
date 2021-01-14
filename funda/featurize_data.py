@@ -106,6 +106,25 @@ class Featurizer(object):
             funda_data = funda_2018
 
         ## CREATE FUNDA 2020 FEATURES
+
+        # create column with publication day, month and year
+        funda_2020['publicationDay'] = pd.DatetimeIndex(funda_2020['publicationDate']).day
+        funda_2020['publicationMonth'] = pd.DatetimeIndex(funda_2020['publicationDate']).month
+        funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
+        # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
+        # and rename columns to the same names in funda_2018
+        funda_2020 = funda_2020.drop(columns=['publicationDate', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
+        # remove the brackets and its content for housetype
+        funda_2020['houseType'] = funda_2020['houseType'].str.replace(r"\(.*\)","").str.lstrip().str.replace('\r\n', '')
+        # replace NaN sales_agent and buying_agent with -1
+        funda_2020['sales_agent'] = funda_2020['sales_agent'].fillna(-1)
+        funda_2020['buying_agent'] = funda_2020['buying_agent'].fillna(-1)
+
+
+        ## CREATE POSTCODE TO MUNICIPALITY AND NEIGHBORHOODCODE TRANSLATION TABLE
+
+        zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
+
         if data_level >2:
             # create column with publication day, month and year
             funda_2020['publicationDay'] = pd.DatetimeIndex(funda_2020['publicationDate']).day
@@ -129,7 +148,6 @@ class Featurizer(object):
             ## CREATE POSTCODE TO MUNICIPALITY AND NEIGHBORHOODCODE TRANSLATION TABLE
             zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
 
-
         ## MERGE ALL TOGETHER
         all_data = funda_data.merge(zipcode_translation, how="left", on="zipcode")
 
@@ -150,6 +168,19 @@ class Featurizer(object):
             all_data['DistrictCode_copy'] = all_data['DistrictCode']
             all_data = pd.get_dummies(data=all_data, columns=['Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
 
+        # create new dataframe with houseTypes dummy codes
+        houseTypes = all_data['houseType'].str.get_dummies(sep=",").add_prefix('houseType_')
+        # join houseType_df with funda_2018
+        all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
+        # replace NaN of parcelsurface with mean per municipalitycode
+        all_data['parcelSurface'] = all_data['parcelSurface'].fillna(all_data.groupby('Municipalitycode')['parcelSurface'].transform('mean'))
+        # create other dummies
+        all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
+        all_data['DistrictCode_copy'] = all_data['DistrictCode']
+        all_data['sales_agent_copy'] = all_data['sales_agent']
+        all_data['buying_agent_copy'] = all_data['buying_agent']
+        all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy','categoryObject', 'energylabelClass','Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
+        
 
         if data_level > 2:
             all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy'], dummy_na=True)

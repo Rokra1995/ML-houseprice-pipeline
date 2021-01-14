@@ -150,11 +150,13 @@ class Featurizer(object):
             all_data['DistrictCode_copy'] = all_data['DistrictCode']
             all_data = pd.get_dummies(data=all_data, columns=['Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
 
+
         if data_level > 2:
             all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy'], dummy_na=True)
         
         # replace NaN of parcelsurface with mean per municipalitycode
         all_data['parcelSurface'] = all_data['parcelSurface'].fillna(all_data.groupby('Municipalitycode')['parcelSurface'].transform('mean'))
+
         all_data = all_data.fillna(-1)
         print('funda features created')
         return all_data

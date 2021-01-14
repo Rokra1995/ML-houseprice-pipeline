@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 from copy import deepcopy
 
+# Robin Kratschmayr
 class Hypertuner(object):
 
     def __init__(self, estimator, tuning_params):

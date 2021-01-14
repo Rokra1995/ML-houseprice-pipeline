@@ -37,7 +37,7 @@ class DataCleaner(object):
     
     # © Baris Orman
     @staticmethod
-    def cleaned_funda_2018(data):
+    def clean_funda_2018(data):
         #Renaming the columns to english
         data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
 

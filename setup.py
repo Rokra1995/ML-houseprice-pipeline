@@ -12,6 +12,7 @@ setup(
         "scikit-learn",
         "tensorflow",
         "matplotlib",
+        'pyarrow'
     ],
     python_requires="==3.8.5"
 )

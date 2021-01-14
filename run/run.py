@@ -10,6 +10,9 @@ from sklearn.model_selection import train_test_split
 from funda.load_data import DataLoader
 from funda.clean_data import DataCleaner
 from funda.featurize_data import Featurizer
+from funda.partition_data import DataPartitioner
+from funda.hypertune_model import Hypertuner
+
 #from funda.validation_utils import DataPartitioner
 #from funda.hypertuning import Hypertuner
 #from sklearn.ensemble import RandomForestRegressor
@@ -89,7 +92,7 @@ def main():
         tourist_info = data_loader.load_tourist_info()
         broker_info = data_loader.load_broker_info()
 
-        print("cleaning data. This may take some time ...")
+        print("Cleaning data...")
         # clean data
         data_cleaner = DataCleaner()
         funda_2018_cleaned = data_cleaner.clean_funda_2018(data=funda_2018)
@@ -100,7 +103,7 @@ def main():
         tourist_info_cleaned = data_cleaner.clean_tourist_info(data=tourist_info)
         broker_info_cleaned = data_cleaner.clean_tourist_info(data=broker_info)
 
-        print("Storing the cleaned data on the disk")
+        print("Storing the cleaned data on the disk...")
         # storing the clean data on disk
         funda_2018_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
         funda_2020_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2020.feather'))
@@ -112,16 +115,6 @@ def main():
 
         print("data loaded, cleaned and saved")
     
-    ## IN CASE OF PERFORMANCE PROBLEMS OVERWRITE THE UNCLEANED DATAFRAMES with 0
-    '''
-    funda_2018 = 0
-    funda_2020 = 0
-    cbs_info = 0
-    cbs_postcodes = 0
-    crime_info = 0
-    tourist_info = 0
-    broker_info = 0
-    '''
 
     ## CREATE MODELLING FEATURES 
     featurize = Featurizer()

@@ -8,3 +8,4 @@ __pycache__
 funda/felicia.py
 test.py
 funda.egg-info/
+*.hdf5

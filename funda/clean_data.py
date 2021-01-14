@@ -93,6 +93,7 @@ class DataCleaner(object):
         for k,v in type_dict.items():
             data = data.astype({k: v})
 
+        print("Broker info cleaned")
         return data
 
     # © Robin Kratschmayr
@@ -104,12 +105,7 @@ class DataCleaner(object):
         data = data.rename(columns={'SalesAgent':'Broker'})
         #transforming the reviewdate into datetimeformat
         data['ReviewDate'] = pd.to_datetime(data['ReviewDate'])
-        return data
-
-    # © Emmanuel Owusu Annim
-    @staticmethod
-    def clean_tourist_info(data):
-        #Translate Dutch Headers to English Headers
+        print("Broker reviews cleaned")
         return data
             
     # © Emmanuel Owusu Annim
@@ -117,6 +113,7 @@ class DataCleaner(object):
     def clean_crime_info(data):
         # Each gemeente has several crime info, out of time reasons we can only input the total amount of registered crimes into the model
         data = data.groupby(['Municipalitycode']).sum().reset_index().fillna(-1)
+        print("Crime info cleaned")
         return data
 
     # © Robin Kratschmayr
@@ -126,6 +123,7 @@ class DataCleaner(object):
         data = data.replace("       .", -1)
         data = data.replace("         .", -1)
         data['Municipalitycode'] = data['Municipalitycode'].str.strip()
+        print("CBS info cleaned")
         return data
             
 
@@ -133,6 +131,7 @@ class DataCleaner(object):
     @staticmethod
     def clean_cbs_postcodes(data):
         data = data.astype({'NeighborhoodCode':'Int64'}).drop_duplicates(subset='zipcode', keep="first")
+        print("CBS zipcodes cleaned")
         return data
 
     # © Felicia Betten
@@ -141,4 +140,5 @@ class DataCleaner(object):
         data = data.rename(columns={'buurtcode2020':'NeighborhoodCode','buurtnaam2020':'NeighborhoodName','GM_2020':'Municipalitycode','GM_NAAM':'MunicipalityName','WK_2020':'DistrictCode','WK_NAAM':'DistrictName'})
         data = data.drop(axis=1, columns='WK2020')
         data = data.drop(columns=['NeighborhoodName'])
+        print("BRT info cleaned")
         return data

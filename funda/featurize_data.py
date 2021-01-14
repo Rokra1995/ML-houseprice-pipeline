@@ -100,7 +100,7 @@ class Featurizer(object):
         ### dummy code categoryObject & energylabelClass
         #funda_2018_cleaned = pd.get_dummies(data=funda_2018_cleaned, columns=['categoryObject', 'energylabelClass'])
         ### drop columns publicationDate, sellingPrice, sellingTime and sellingDate
-        funda_2018 = funda_2018.drop(columns=['publicationDate', 'sellingPrice', 'sellingTime', 'sellingDate'])
+        funda_2018 = funda_2018.drop(columns=['publicationDate', 'sellingTime', 'sellingDate'])
         funda_2018['houseType'] = funda_2018['houseType'].replace(to_replace={'2-onder-1-kapwoning':'semi-detachedresidentialproperty','bel-etage':'Ground-floorapartment','beneden+bovenwoning':'Ground-floor+upstairsapartment', 'benedenwoning':'Residentialpropertywithsharedstreetentrance', 'bovenwoning':'Upstairsapartment', 'bungalow':'Bungalow', 'dubbelbenedenhuis':'Doubleground-floorapartment', 'eengezinswoning':'Single-familyhome', 'galerijflat':'Galleriedapartment', 'geschakelde2-onder-1-kapwoning':'linkedsemi-detachedresidentialproperty', 'grachtenpand':'Propertyalongsidecanal', 'halfvrijstaandewoning':'detachedresidentialproperty', 'hoekwoning':'cornerhouse', 'penthouse':'Penthouse', 'landgoed':'Countryestate', 'landhuis':'Countryhouse', 'maisonnette':'Maisonnette', 'stacaravan':'Mobilehome', 'semi-bungalow':'semi-detachedresidentialproperty', 'verspringend':'staggered', 'studentenkamer':'Studentroom', 'tussenverdieping':'Mezzanine', 'villa':'Villa', 'vrijstaandewoning':'Desirableresidence/villa', 'woonboerderij':'Convertedfarmhouse', 'woonboot':'Houseboat', 'OpenPortiek':'Apartmentwithsharedstreetentrance', 'OpenPortiek2':'Apartmentwithsharedstreetentrance', 'portiekflat':'Apartmentwithsharedstreetentrance', 'portiekwoning':'Apartmentwithsharedstreetentrance', 'dubbelbovenhuis':'doublehouse', 'appartement':'Apartmentwithsharedstreetentrance', 'bedrijfs-ofdienstwoning':'companyresidenceofficialresidence', 'corridorflat':'Apartmentwithsharedstreetentrance', 'dijkwoning':'dykehouse', 'drive-inwoning':'drive-in house', 'eindwoning':'Apartmentwithsharedstreetentrance', 'geschakeldewoning':'semi-detachedresidentialproperty', 'herenhuis':'mansion', 'hofjeswoning':'Countryhouse', 'kwadrantwoning':'quadranthouse', 'paalwoning':'stilthouse', 'patiowoning':'patiohouse', 'split-levelwoning':'split-levelhouse', 'tussenwoning':'rowhouse', 'verzorgingsflat':'nursing-home', 'waterwoning':'waterhouse', 'wind/watermolen':'wind/watermill'},regex=True)
 
 
@@ -112,7 +112,7 @@ class Featurizer(object):
         funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
         # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
         # and rename columns to the same names in funda_2018
-        funda_2020 = funda_2020.drop(columns=['publicationDate', 'sellingPrice', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
+        funda_2020 = funda_2020.drop(columns=['publicationDate', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
         # remove the brackets and its content for housetype
         funda_2020['houseType'] = funda_2020['houseType'].str.replace(r"\(.*\)","").str.lstrip().str.replace('\r\n', '')
         # replace NaN sales_agent and buying_agent with -1
@@ -136,6 +136,8 @@ class Featurizer(object):
         houseTypes = all_data['houseType'].str.get_dummies(sep=",").add_prefix('houseType_')
         # join houseType_df with funda_2018
         all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
+        # replace NaN of parcelsurface with mean per municipalitycode
+        all_data['parcelSurface'] = all_data['parcelSurface'].fillna(all_data.groupby('Municipalitycode')['parcelSurface'].transform('mean'))
         # create other dummies
         all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
         all_data['DistrictCode_copy'] = all_data['DistrictCode']
@@ -143,7 +145,6 @@ class Featurizer(object):
         all_data['buying_agent_copy'] = all_data['buying_agent']
         all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy','categoryObject', 'energylabelClass','Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
         
-        #all_data['parcelSurface'] = all_data.groupby("Municipalitycode").transform(lambda x: x.fillna(x.mean()))
         all_data = all_data.fillna(-1)
         print('funda features created')
         return all_data

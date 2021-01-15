@@ -86,8 +86,9 @@ def main():
         data_loader = DataLoader(conf['base_folder'])
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
+        zipcodes = data_loader.load_cbs_postcodes()
+        brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()
-        cbs_postcodes = data_loader.load_cbs_postcodes()
         crime_info = data_loader.load_crime_data()
         tourist_info = data_loader.load_tourist_info()
         broker_info = data_loader.load_broker_info()
@@ -95,32 +96,50 @@ def main():
         print("Cleaning data...")
         # clean data
         data_cleaner = DataCleaner()
-        funda_2018_cleaned = data_cleaner.clean_funda_2018(data=funda_2018)
-        funda_2020_cleaned = data_cleaner.clean_funda_2020(data=funda_2020)
-        cbs_info_cleaned = data_cleaner.clean_cbs_info(data=cbs_info)
-        cbs_postcodes_cleaned = data_cleaner.clean_cbs_postcodes(data=cbs_postcodes)
-        crime_info_cleaned = data_cleaner.clean_crime_info(data=crime_info)
-        tourist_info_cleaned = data_cleaner.clean_tourist_info(data=tourist_info)
-        broker_info_cleaned = data_cleaner.clean_tourist_info(data=broker_info)
+        funda_2018_cleaned = data_cleaner.clean_funda_2018(funda_2018)
+        zipcode_data_cleaned = data_cleaner.clean_cbs_postcodes(zipcodes)
+        brt_data_cleaned = data_cleaner.clean_brt_2020(brt_data)
+        funda_2020_cleaned = data_cleaner.clean_funda_2020(funda_2020)
+        cbs_cleaned = data_cleaner.clean_cbs_info(cbs_info)
+        crime_cleaned = data_cleaner.clean_crime_info(crime_info)
+        tourist_cleaned = data_cleaner.clean_tourist_info(tourist_info)
+        broker_cleaned = data_cleaner.clean_broker_info(broker_info)
 
         print("Storing the cleaned data on the disk...")
         # storing the clean data on disk
-        funda_2018_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
-        funda_2020_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2020.feather'))
-        cbs_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_info.feather'))
-        cbs_postcodes_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_postcodes.feather'))
-        crime_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'crime_info.feather'))
-        tourist_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'tourist_info.feather'))
-        broker_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
+        #funda_2018_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
+        #funda_2020_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2020.feather'))
+        #cbs_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_info.feather'))
+        #cbs_postcodes_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_postcodes.feather'))
+        #crime_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'crime_info.feather'))
+        #tourist_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'tourist_info.feather'))
+        #broker_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
 
         print("data loaded, cleaned and saved")
     
 
+
     ## CREATE MODELLING FEATURES 
     featurize = Featurizer()
+    funda = featurize.funda(funda_2018_cleaned, funda_2020_cleaned,zipcode_data_cleaned, brt_data_cleaned,1)
+    cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
+    broker_ft = featurize.broker_info(broker_cleaned)
+    all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,1)
 
     ## CREATE TRAIN AND TEST SET
-    train, test = train_test_split(gt, test_size=0.4)
+    ## PARTITION DATA
+    data_partitioner = DataPartitioner()
+    train_test_set = data_partitioner.partition_data(all_features)
+    train_set = train_test_set[train_test_set.test==False].drop(columns=['test'])
+    test_set = train_test_set[train_test_set.test==True].drop(columns=['test'])
+
+    ## CREATE RF REGRESSOR AND HYPTERTUNE
+    tuning_params = {"n_estimators": [800],
+                    "max_depth": [12]}
+    hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = tuning_params)
+
+    ## RUN MODEL
+    result_RF = hypertuner_rf.tune_model(train_set)
     '''
     ## CREATE TRAIN AND TEST SETS AND CV SPLITS
     validation_mapping = DataPartitioner().partition_data(power_df)

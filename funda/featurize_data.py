@@ -168,19 +168,6 @@ class Featurizer(object):
             all_data['DistrictCode_copy'] = all_data['DistrictCode']
             all_data = pd.get_dummies(data=all_data, columns=['Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
 
-        # create new dataframe with houseTypes dummy codes
-        houseTypes = all_data['houseType'].str.get_dummies(sep=",").add_prefix('houseType_')
-        # join houseType_df with funda_2018
-        all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
-        # replace NaN of parcelsurface with mean per municipalitycode
-        all_data['parcelSurface'] = all_data['parcelSurface'].fillna(all_data.groupby('Municipalitycode')['parcelSurface'].transform('mean'))
-        # create other dummies
-        all_data['Municipalitycode_copy'] = all_data['Municipalitycode']
-        all_data['DistrictCode_copy'] = all_data['DistrictCode']
-        all_data['sales_agent_copy'] = all_data['sales_agent']
-        all_data['buying_agent_copy'] = all_data['buying_agent']
-        all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy','categoryObject', 'energylabelClass','Municipalitycode_copy', 'DistrictCode_copy'], dummy_na=True)
-        
 
         if data_level > 2:
             all_data = pd.get_dummies(data=all_data, columns=['sales_agent_copy', 'buying_agent_copy'], dummy_na=True)

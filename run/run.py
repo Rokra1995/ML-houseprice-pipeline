@@ -88,9 +88,9 @@ def main():
         print("Loading data...")
         # load data
         data_loader = DataLoader(conf['base_folder'])
-        funda_2018 = data_loader.load_funda_data_2018()[:500]
-        funda_2020 = data_loader.load_funda_data_2020()[:500]
-        if conf['data_level'] == 1:
+        funda_2018 = data_loader.load_funda_data_2018()
+        funda_2020 = data_loader.load_funda_data_2020()
+        if conf['demo_mode'] == 1:
             funda_2018 = funda_2018[:500]
             funda_2020 = funda_2020[:500]
         zipcodes = data_loader.load_cbs_postcodes()
@@ -155,7 +155,7 @@ def main():
     result_RF = loaded_model.predict(test_set)
 
     print('Building & training Neural Network')
-    ## CREATE RF REGRESSOR AND HYPTERTUNE
+    ## CREATE NN REGRESSOR AND HYPTERTUNE
     hypertuner_NN = Hypertuner(estimator = MLPRegressor(activation='relu',solver='adam'), tuning_params = conf['training_params']['hypertuning']['NN_params'], run_folder= run_folder)
     ## RUN MODEL
     tested_models, best_model_mse, best_model_params, best_model_name = hypertuner_NN.tune_model(train_set)

@@ -113,7 +113,7 @@ class Featurizer(object):
         funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
         # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
         # and rename columns to the same names in funda_2018
-        funda_2020 = funda_2020.drop(columns=['publicationDate', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
+        funda_2020 = funda_2020.drop(columns=['publicationDate','sellingTime'])
         # remove the brackets and its content for housetype
         funda_2020['houseType'] = funda_2020['houseType'].str.replace(r"\(.*\)","").str.lstrip().str.replace('\r\n', '')
         # replace NaN sales_agent and buying_agent with -1
@@ -132,7 +132,7 @@ class Featurizer(object):
             funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
             # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
             # and rename columns to the same names in funda_2018
-            funda_2020 = funda_2020.drop(columns=['publicationDate', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingtime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
+            funda_2020 = funda_2020.drop(columns=['publicationDate', 'Asking_Price_M2', 'Facilities', 'description_garden', 'sellingDate', 'sellingTime', 'url']).rename(columns={'fulldescription':'fullDescription', 'yearofbuilding':'yearofbuilding', 'garden_binary':'garden', 'housetype':'houseType', 'parcelsurface':'parcelSurface', 'energylabelclass':'energylabelClass','numberrooms':'numberRooms', 'numberbathrooms':'numberBathrooms'})
             # remove the brackets and its content for housetype
             funda_2020['houseType'] = funda_2020['houseType'].str.replace(r"\(.*\)","").str.lstrip().str.replace('\r\n', '')
             # replace NaN sales_agent and buying_agent with -1
@@ -200,6 +200,7 @@ class Featurizer(object):
 
     # © Robin Kratschmayr
     def combine_featurized_data(self,funda,cbs_ft,broker_ft, data_level):
+        print('combining all features')
         if data_level == 0:
             print('No more Features necessary on this litle data')
             data = funda
@@ -216,4 +217,5 @@ class Featurizer(object):
 
         #Drop columns that are not needed and replace ervy NaN with a -1
         data = data.drop(columns=['zipcode','fullDescription']).fillna(-1)
+        print('all features combined')
         return data

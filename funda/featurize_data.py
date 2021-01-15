@@ -105,25 +105,11 @@ class Featurizer(object):
         if data_level <=2:
             funda_data = funda_2018
 
+        if data_level >0:
+            ## CREATE POSTCODE TO MUNICIPALITY AND NEIGHBORHOODCODE TRANSLATION TABLE
+            zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
+
         ## CREATE FUNDA 2020 FEATURES
-
-        # create column with publication day, month and year
-        funda_2020['publicationDay'] = pd.DatetimeIndex(funda_2020['publicationDate']).day
-        funda_2020['publicationMonth'] = pd.DatetimeIndex(funda_2020['publicationDate']).month
-        funda_2020['publicationYear'] = pd.DatetimeIndex(funda_2020['publicationDate']).year
-        # drop columns publicationDate, sellingPrice, Asking_Price_M2, Facilities, description_garden, sellingDate, sellingtime and url
-        # and rename columns to the same names in funda_2018
-        funda_2020 = funda_2020.drop(columns=['publicationDate','sellingTime'])
-        # remove the brackets and its content for housetype
-        funda_2020['houseType'] = funda_2020['houseType'].str.replace(r"\(.*\)","").str.lstrip().str.replace('\r\n', '')
-        # replace NaN sales_agent and buying_agent with -1
-        funda_2020['sales_agent'] = funda_2020['sales_agent'].fillna(-1)
-        funda_2020['buying_agent'] = funda_2020['buying_agent'].fillna(-1)
-
-
-        ## CREATE POSTCODE TO MUNICIPALITY AND NEIGHBORHOODCODE TRANSLATION TABLE
-
-        zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
 
         if data_level >2:
             # create column with publication day, month and year
@@ -144,9 +130,8 @@ class Featurizer(object):
             # concat with funda 2018 data
             funda_data = pd.concat([funda_2018,funda_2020])
         
-        if data_level > 0:
-            ## CREATE POSTCODE TO MUNICIPALITY AND NEIGHBORHOODCODE TRANSLATION TABLE
-            zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
+    
+        zipcode_translation = zipcode_data.merge(brt_data, how="left", on="NeighborhoodCode").drop(columns=['NeighborhoodCode','DistrictCode_x','MunicipalityCode','MunicipalityName','DistrictName']).rename(columns={'DistrictCode_y':'DistrictCode'}).drop_duplicates()
 
         ## MERGE ALL TOGETHER
         all_data = funda_data.merge(zipcode_translation, how="left", on="zipcode")
@@ -160,7 +145,7 @@ class Featurizer(object):
         else:
             all_data = all_data.drop(columns=['houseType'])
         
-        all_data = pd.get_dummies(data=all_data, columns=['categoryObject', 'energylabelClass'], dummy_na=True)
+        all_data = pd.get_dummies(data=all_data, columns=['categoryObject', 'energylabelClass'])
 
         if data_level > 0:
             # create other dummies
@@ -203,7 +188,8 @@ class Featurizer(object):
         print('combining all features')
         if data_level == 0:
             print('No more Features necessary on this litle data')
-            data = funda
+            data = funda.drop(columns=['Municipalitycode','DistrictCode',])
+    
         if data_level>0:
             # merging all the data
             data = funda.merge(cbs_ft, how="left", on="Municipalitycode")

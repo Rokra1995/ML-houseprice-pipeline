@@ -50,7 +50,7 @@ class Hypertuner(object):
             parameter_combos_dicts.append(d)
 
         tested_models = []
-        best_model_mse = 1000000000
+        best_model_mse = 10000000000
         best_model_params = ''
         best_model_name = ''
 

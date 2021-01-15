@@ -121,10 +121,10 @@ def main():
 
     ## CREATE MODELLING FEATURES 
     featurize = Featurizer()
-    funda = featurize.funda(funda_2018_cleaned, funda_2020_cleaned,zipcode_data_cleaned, brt_data_cleaned,1)
+    funda = featurize.funda(funda_2018_cleaned, funda_2020_cleaned,zipcode_data_cleaned, brt_data_cleaned,conf['data_level'])
     cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
     broker_ft = featurize.broker_info(broker_cleaned)
-    all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,1)
+    all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,conf['data_level'])
 
     ## CREATE TRAIN AND TEST SET
     ## PARTITION DATA
@@ -132,32 +132,28 @@ def main():
     train_test_set = data_partitioner.partition_data(all_features)
     train_set = train_test_set[train_test_set.test==False].drop(columns=['test'])
     test_set = train_test_set[train_test_set.test==True].drop(columns=['test'])
+    truth = test_set.sellingPrice
+    test_set = test_set.drop(columns=['sellingPrice','cv_split'])
 
     ## CREATE RF REGRESSOR AND HYPTERTUNE
-    tuning_params = {"n_estimators": [800],
-                    "max_depth": [12]}
-    hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = tuning_params)
+    hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'])
 
     ## RUN MODEL
-    result_RF = hypertuner_rf.tune_model(train_set)
-    '''
-    ## CREATE TRAIN AND TEST SETS AND CV SPLITS
-    validation_mapping = DataPartitioner().partition_data(power_df)
-    validation_mapping.to_feather(os.path.join(run_folder, 
-    "prepared", "validation_mapping.feather"))
+    tested_models, best_model_mse, best_model_params, best_model_name = hypertuner_rf.tune_model(train_set)
+    
+    ## LOAD MODEL and make prediction
+    loaded_model = pickle.load(open(os.path.join(self.run_folder, 'models' , best_model_name ), 'rb'))
+    result = loaded_model.predict(test_set)
 
-    ## CREATE MODELLING FEATURES
-    featurized_data = Featurizer(housing_info).fit_transform(power_df)
-    featurized_data.to_feather(os.path.join(run_folder, "prepared", "features.feather"))
-
-    ## SELECT BEST FORECASTING MODEL WITH 10 FOLD CV ON TRAIN FEATURES
-    train_set = featurized_data.merge(validation_mapping.query("test == False")[['LCLid',
-    'date']])
-    hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234),
-    tuning_params = conf["training_params"]["hypertuning"]["RF_params"],
-    validation_mapping = validation_mapping
-    )  
-    '''
+    plt.figure()
+    plt.scatter(result, truth, alpha=0.2)
+    plt.xlabel('Predictions')
+    plt.ylabel('True Values')
+    lims = [0, 3000000]
+    plt.xlim(lims)
+    plt.ylim(lims)
+    _ = plt.plot(lims, lims)
+    plt.show()
 
 
 if __name__ == "__main__":

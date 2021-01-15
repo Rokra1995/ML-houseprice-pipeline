@@ -2,13 +2,15 @@ import pandas as pd
 import numpy as np
 import itertools
 from copy import deepcopy
+import pickle
+import os
 
-# Robin Kratschmayr
 class Hypertuner(object):
 
-    def __init__(self, estimator, tuning_params):
+    def __init__(self, estimator, tuning_params, run_folder):
         self.estimator = estimator
         self.tuning_params = tuning_params
+        self.run_folder = run_folder
 
     def calculate_mean_cv_error(self, train_set, estimator_cv):
         # now perform cross validation fitting for each split
@@ -31,7 +33,7 @@ class Hypertuner(object):
             # given parameters
             rmse = np.sqrt(np.sum(np.square(X_truth - y_pred))/X_test.shape[0])
             cv_errors.append(rmse)
-        return sum(cv_errors)/len(cv_errors)
+        return sum(cv_errors)/len(cv_errors), estimator_cv
 
     def tune_model(self, train_set):
         '''Perform the hypertuning of the estimator on the train set
@@ -48,12 +50,33 @@ class Hypertuner(object):
             parameter_combos_dicts.append(d)
 
         tested_models = []
+        best_model_mse = 1000000000
+        best_model_params = ''
+        best_model_name = ''
 
         for d in parameter_combos_dicts:
             print('testing combo: ', d)
             estimator_cv = deepcopy(self.estimator)
             estimator_cv = estimator_cv.set_params(**d)
-            mean_cv_error = self.calculate_mean_cv_error(train_set, estimator_cv)
+            mean_cv_error, trained_estimator = self.calculate_mean_cv_error(train_set, estimator_cv)
             tested_models.append([d,mean_cv_error])
+            # saving best model to disk
+            if mean_cv_error < best_model_mse:
+                filename = 'Best_model.sav'
+                pickle.dump(trained_estimator, open(os.path.join(self.run_folder, 'models' , 'Best_model.sav' ), 'wb'))
+                best_model_params = d
+                best_model_mse = mean_cv_error
         print(tested_models)
-        return tested_models
+
+        # Renaming the best saved model with params and mse
+        string = 'Best_model'
+        for k,v in best_model_params.items():
+            string = string + '_'+k+':'+str(v)
+
+        string = string + 'MSE:' + str(best_model_mse)
+        string = string + '.sav'
+
+        os.rename(os.path.join(self.run_folder, 'models' , 'Best_model.sav' ),os.path.join(self.run_folder, 'models' , string ))
+        best_model_name = string
+
+        return tested_models, best_model_mse, best_model_params, best_model_name

@@ -23,6 +23,9 @@ class DataLoader(object):
         #Changing dataypes for publication date and selling date
         data['publicationDate'] = pd.to_datetime(data['publicationDate'])
         data['sellingDate'] = pd.to_datetime(data['sellingDate'])
+
+        # somehow energylabelcalass has to be converted as str again to be able to save it as feather later
+        data['energylabelClass'] = data['energylabelClass'].astype('str')
         print('Funda data of 2018 successfully loaded')
         return data
     
@@ -30,7 +33,19 @@ class DataLoader(object):
     def load_funda_data_2020(self):
         full_path = os.path.join(self.base_folder, 'data','raw','funda_2020_sold_houses.csv')
         data = pd.read_csv(full_path)
-        data = data.rename(columns={'yearofbuilding':'yearOfBuilding'})
+        data = data.rename(columns={'yearofbuilding':'yearOfBuilding',
+                                    'energylabelclass':'energylabelClass',
+                                    'fulldescription':'fullDescription',
+                                    'sellingtime':'sellingTime',
+                                    'housetype':'houseType',
+                                    'garden_binary':'garden',
+                                    'parcelsurface':'parcelSurface',
+                                    'numberrooms':'numberRooms',
+                                    'numberbathrooms':'numberBathrooms',})
+        data = data.drop(columns=['Facilities','Asking_Price_M2','url','Ownership situation', 'Cadastre_Title'])
+
+        # somehow energylabelcalass has to be converted as str again to be able to save it as feather later
+        data['energylabelClass'] = data['energylabelClass'].astype('str')
         print('Funda data of 2020 successfully loaded')
         return data
 

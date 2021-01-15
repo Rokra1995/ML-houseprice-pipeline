@@ -11,14 +11,12 @@ class DataCleaner(object):
     def clean_funda_2020(data):
         # Replace all None values by NaN
         data = data.replace("None", np.NaN)
-        # Drop column Ownership situation
-        data = data.drop(columns=['Ownership situation', 'Cadastre_Title'])
         # Remove m³ removed from parcelsurface  
-        data['parcelsurface'] = data['parcelsurface'].str.replace(r'\D', '').astype(int)
+        data['parcelSurface'] = data['parcelSurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
-        data['housetype'] = data['housetype'].str.rstrip('\r\n').str.replace(' ', '')
+        data['houseType'] = data['houseType'].str.rstrip('\r\n').str.replace(' ', '')
         # Replace 0 in Garden_binary with NaN
-        data['garden_binary'] = data['garden_binary'].replace(0, np.nan)      
+        #data['garden'] = data['garden'].replace(0, np.nan)      
 
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty

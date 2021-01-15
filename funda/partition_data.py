@@ -24,4 +24,5 @@ class DataPartitioner(object):
         cv_splits = np.random.randint(1, self.train_cv_splits + 1, obs_train.shape[0])
         obs_train = obs_train.assign(cv_split = cv_splits)
         final_obs = pd.concat([obs_test, obs_train]).reset_index(drop=True)
+        print('Data splittet into test/train set and prepared for cross_validation')
         return final_obs

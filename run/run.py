@@ -13,6 +13,7 @@ from funda.clean_data import DataCleaner
 from funda.featurize_data import Featurizer
 from funda.partition_data import DataPartitioner
 from funda.hypertune_model import Hypertuner
+from funda.evaluate_model import Evaluator
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
@@ -40,7 +41,7 @@ def main():
     run_folder = os.path.join(conf['base_folder'], 'run_' + run_id_start_time.strftime("%Y%m%d_%H%M"))
     # make sure we have all folders where the output of the run
     # will be stored
-    for i in ['clean', 'logs', 'prepared', 'models', 'predictions']:
+    for i in ['clean', 'logs', 'prepared', 'models', 'predictions','plots']:
         Path(run_folder, i).mkdir(parents=True, exist_ok=True)
     # if the raw folder does not exist, stop and throw an error
     assert os.path.exists(os.path.join(conf['base_folder'], 'data', 'raw')), "I can't find the raw folder!"
@@ -91,8 +92,8 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode'] == 1:
-            funda_2018 = funda_2018[:500]
-            funda_2020 = funda_2020[:500]
+            funda_2018 = funda_2018[:2000]
+            funda_2020 = funda_2020[:1000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()
@@ -113,13 +114,14 @@ def main():
 
         print("Storing the cleaned data on the disk...")
         # storing the clean data on disk
-        funda_2018_cleaned.reset_index().to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
+        #funda_2018_cleaned.reset_index().to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
         #funda_2020_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2020.feather'))
-        #cbs_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_info.feather'))
-        #cbs_postcodes_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_postcodes.feather'))
-        #crime_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'crime_info.feather'))
-        #tourist_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'tourist_info.feather'))
-        #broker_info_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
+        #cbs_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_info.feather'))
+        #zipcode_data_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_postcodes.feather'))
+        #crime_cleaned.to_feather(os.path.join(run_folder, 'clean', 'crime_info.feather'))
+        #tourist_cleaned.to_feather(os.path.join(run_folder, 'clean', 'tourist_info.feather'))
+        #broker_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
+        #brt_data_cleaned.to_feather(os.path.join(run_folder, 'clean', 'brt.feather'))
 
         print("data loaded, cleaned and saved")
     
@@ -131,6 +133,9 @@ def main():
     cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
     broker_ft = featurize.broker_info(broker_cleaned)
     all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,conf['data_level']).reset_index()
+    funda=0
+    cbs_ft=0
+    broker_ft=0
 
     ## CREATE TRAIN AND TEST SET
     ## PARTITION DATA
@@ -141,13 +146,18 @@ def main():
     test_set = train_test_set[train_test_set.test==True].drop(columns=['test'])
     truth = test_set.sellingPrice
     test_set = test_set.drop(columns=['sellingPrice','cv_split'])
+    all_features=0
+
+    train_set = train_set.drop(columns=['GM2020'])
+    test_set_map = test_set[['GM2020']]
+    test_set = test_set.drop(columns=['GM2020'])
 
     print('Building & training Random Forest Model')
     ## CREATE RF REGRESSOR AND HYPTERTUNE
     hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'], run_folder= run_folder)
 
     ## RUN MODEL
-    tested_models, best_model_mse, best_model_params, best_model_name = hypertuner_rf.tune_model(train_set)
+    tested_models, best_model_mse, best_model_params_RF, best_model_name = hypertuner_rf.tune_model(train_set)
     
     print('perfoming prediction on Random Forest Model')
     ## LOAD MODEL and make prediction
@@ -156,41 +166,30 @@ def main():
 
     print('Building & training Neural Network')
     ## CREATE NN REGRESSOR AND HYPTERTUNE
-    hypertuner_NN = Hypertuner(estimator = MLPRegressor(activation='relu',solver='adam'), tuning_params = conf['training_params']['hypertuning']['NN_params'], run_folder= run_folder)
+    #hypertuner_NN = Hypertuner(estimator = MLPRegressor(activation='relu',solver='adam'), tuning_params = conf['training_params']['hypertuning']['NN_params'], run_folder= run_folder)
     ## RUN MODEL
-    tested_models, best_model_mse, best_model_params, best_model_name = hypertuner_NN.tune_model(train_set)
+    #tested_models, best_model_mse, best_model_params_NN, best_model_name = hypertuner_NN.tune_model(train_set)
     
     print('perfoming prediction on Neural Network')
     ## LOAD MODEL and make prediction
-    loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
-    result_NN = loaded_model.predict(test_set)
+    #loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
+    #result_NN = loaded_model.predict(test_set)
 
 
 
     runtime = datetime.datetime.now() - run_id_start_time
     print('Runtime: '+ str(runtime))
 
-    print('plotting residuals vs. fitted on Random Forrest Model')
-    plt.figure()
-    plt.scatter(result_RF, truth, alpha=0.2)
-    plt.xlabel('Predictions')
-    plt.ylabel('True Values')
-    lims = [0, 3000000]
-    plt.xlim(lims)
-    plt.ylim(lims)
-    _ = plt.plot(lims, lims)
-    plt.show()
+    print('Time to evalaute the best of each modeltypes...')
+    
+    evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
+    evaluate_RF.evaluate_model(result_RF,truth)
+    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
+    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
 
-    print('plotting residuals vs. fitted on Neural Network')
-    plt.figure()
-    plt.scatter(result_NN, truth, alpha=0.2)
-    plt.xlabel('Predictions')
-    plt.ylabel('True Values')
-    lims = [0, 3000000]
-    plt.xlim(lims)
-    plt.ylim(lims)
-    _ = plt.plot(lims, lims)
-    plt.show()
+    #evaluate_NN = Evaluator(run_folder,'Neural_Network_Regressor',best_model_params_NN)
+    #evaluate_NN.evaluate_model(result_NN,truth)
+    
 
 
 if __name__ == "__main__":

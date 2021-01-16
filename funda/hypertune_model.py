@@ -73,7 +73,7 @@ class Hypertuner(object):
         for k,v in best_model_params.items():
             string = string + '_'+k+':'+str(v)
 
-        string = string + 'MSE:' + str(best_model_mse)
+        string = string + 'MSE:' + str(int(best_model_mse))
         string = string + '.sav'
 
         os.rename(os.path.join(self.run_folder, 'models' , 'Best_model.sav' ),os.path.join(self.run_folder, 'models' , string ))

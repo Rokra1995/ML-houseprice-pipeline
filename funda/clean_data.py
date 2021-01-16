@@ -36,7 +36,7 @@ class DataCleaner(object):
 
         # removing outliers that don't contain info about the sellingprice or the given info is really low so it 
         # has either a typo or the rent price is given not the sellingprice.
-        data = data[data.sellingPrice <2000]
+        data = data[data.sellingPrice >2000]
         print("Funda data 2020 cleaned")
         return data
     
@@ -76,7 +76,7 @@ class DataCleaner(object):
 
         # removing approx 800 rws that don't contain info about the sellingprice or the given info is really low so it 
         # has either a typo or the rent price is given not the sellingprice.
-        data = data[data.sellingPrice <2000]
+        data = data[data.sellingPrice >2000]
 
         print("Funda data 2018 cleaned")
         return data

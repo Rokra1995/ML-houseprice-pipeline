@@ -187,7 +187,7 @@ def main():
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
 
-    evaluate_NN = Evaluator(run_folder,'Neural_Network_Regressor',best_model_params_NN)
+    evaluate_NN = Evaluator(conf['base_folder'],run_folder,'Neural_Network_Regressor',best_model_params_NN)
     evaluate_NN.evaluate_model(result_NN,truth)
     evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_5')
     evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_10')

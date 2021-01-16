@@ -24,21 +24,38 @@ How to set up the config.json
     - tourist_info: A dataset with more info about the municpalitys regarding to tourism
     - pc6: A dataset containing the postcodes of each municipality and neighbourhood in the netherlands to link the data
     
-    Data Level 1:
-    - Only funda 2018 data
-    Data Level 2:
-    - funda_2018 data + NLP_description_sentiment + CBS Municipality information
-    Data Level 3:
-    - funda_2018
-    - funda_2020
-    Data Level 4:
-    - funda_2018
-    - funda_2020
-    - NLP_description_sentiment
-    - CBS_Municipality_info
-    Data Level 5:
-    - funda_2018
-    - funda_2020
-    - NLP_description_sentiment
-    - CBS_Municipality_info
-    - broker_information
+
+    Data level 0:
+    - only funda 2018 data
+
+    Data level 1:
+    - only funda 2018 data + Municipality
+
+    Data level 2:
+    - only funda 2018 data + Municipality + district
+
+    Data level 3:
+    - only funda 2018 data + Municipality + district + Neighboorhood
+
+    Data level 4:
+    - funda 2018 data + Municipality + district + Neighboorhood
+    - cbs_data
+
+    Data level 5:
+    - funda 2018 data + Municipality + district + Neighboorhood
+    - cbs_data
+    - funda_2020 data
+
+    Data level 6:
+    - funda 2018 data + Municipality + district + Neighboorhood
+    - cbs_data
+    - funda_2020 data
+    - broker data
+
+    Data level 7:
+    - funda 2018 data + Municipality + district + Neighboorhood
+    - cbs_data
+    - funda_2020 data
+    - broker data
+    - sentiment analysis on fulldescription
+

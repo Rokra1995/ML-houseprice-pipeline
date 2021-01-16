@@ -30,6 +30,13 @@ class DataCleaner(object):
 
             # apply function to each row of the column 
         data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: calculate_mean_yearofbuilding_funda_2020(date))
+        # removing outliers due to typos in the yearOfBuilding column and unusualy year of Building dates
+        data = data[data.yearOfBuilding >1800]
+        data = data[data.yearOfBuilding <2050]
+
+        # removing outliers that don't contain info about the sellingprice or the given info is really low so it 
+        # has either a typo or the rent price is given not the sellingprice.
+        data = data[data.sellingPrice <2000]
         print("Funda data 2020 cleaned")
         return data
     
@@ -63,6 +70,14 @@ class DataCleaner(object):
                 return int(date)
 
         data['yearOfBuilding'] = data['yearOfBuilding'].apply(lambda date: mean_yearofBuilding_funda_2018(date))
+        # removing appro 800 rows due to typos in the yearOfBuilding column and unusualy year of Building dates
+        data = data[data.yearOfBuilding >1800]
+        data = data[data.yearOfBuilding <2050]
+
+        # removing approx 800 rws that don't contain info about the sellingprice or the given info is really low so it 
+        # has either a typo or the rent price is given not the sellingprice.
+        data = data[data.sellingPrice <2000]
+
         print("Funda data 2018 cleaned")
         return data
 

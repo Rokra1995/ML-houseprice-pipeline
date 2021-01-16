@@ -10,9 +10,10 @@ setup(
         "numpy",
         "plotnine",
         "scikit-learn",
-        "tensorflow",
         "matplotlib",
-        'pyarrow'
+        'pyarrow',
+        'nltk',
+        'geopandas'
     ],
     python_requires="==3.8.5"
 )

@@ -166,9 +166,9 @@ def main():
 
     print('Building & training Neural Network')
     ## CREATE NN REGRESSOR AND HYPTERTUNE
-    #hypertuner_NN = Hypertuner(estimator = MLPRegressor(activation='relu',solver='adam'), tuning_params = conf['training_params']['hypertuning']['NN_params'], run_folder= run_folder)
+    hypertuner_NN = Hypertuner(estimator = MLPRegressor(activation='relu',solver='adam'), tuning_params = conf['training_params']['hypertuning']['NN_params'], run_folder= run_folder)
     ## RUN MODEL
-    #tested_models, best_model_mse, best_model_params_NN, best_model_name = hypertuner_NN.tune_model(train_set)
+    tested_models, best_model_mse, best_model_params_NN, best_model_name = hypertuner_NN.tune_model(train_set)
     
     print('perfoming prediction on Neural Network')
     ## LOAD MODEL and make prediction
@@ -187,8 +187,10 @@ def main():
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
 
-    #evaluate_NN = Evaluator(run_folder,'Neural_Network_Regressor',best_model_params_NN)
-    #evaluate_NN.evaluate_model(result_NN,truth)
+    evaluate_NN = Evaluator(run_folder,'Neural_Network_Regressor',best_model_params_NN)
+    evaluate_NN.evaluate_model(result_NN,truth)
+    evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_5')
+    evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_10')
     
 
 

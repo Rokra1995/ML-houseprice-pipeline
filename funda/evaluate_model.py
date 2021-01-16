@@ -110,7 +110,7 @@ class Evaluator(object):
         gemeente_boundaries['Code'] = gemeente_boundaries['Code'].astype('int')
         final_df = gemeente_boundaries.merge(geo_df, how="left", left_on="Code", right_on="GM_Code")
 
-        p = final_df.plot(column=accuracy_level, figsize = (12,10),legend =True, cmap = 'RdYlGn')
+        p = final_df.plot(column=accuracy_level, figsize = (12,10),legend =True, cmap = 'RdYlGn', vmin=0,vmax=1)
         p.axis('off')
         p.set_title('Accuracy per gemeente with treshhold: {}'.format(accuracy_level))
         p.get_figure().savefig(os.path.join(self.plot_folder,'{}_geo_map_{}.png'.format(self.model,accuracy_level)))

@@ -172,8 +172,8 @@ def main():
     
     print('perfoming prediction on Neural Network')
     ## LOAD MODEL and make prediction
-    #loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
-    #result_NN = loaded_model.predict(test_set)
+    loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
+    result_NN = loaded_model.predict(test_set)
 
 
 

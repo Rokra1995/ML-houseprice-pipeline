@@ -92,8 +92,8 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode'] == 1:
-            funda_2018 = funda_2018[:2000]
-            funda_2020 = funda_2020[:1000]
+            funda_2018 = funda_2018[:110000]
+            funda_2020 = funda_2020[:110000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()
@@ -154,15 +154,15 @@ def main():
 
     print('Building & training Random Forest Model')
     ## CREATE RF REGRESSOR AND HYPTERTUNE
-    hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'], run_folder= run_folder)
+    #hypertuner_rf = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'], run_folder= run_folder)
 
     ## RUN MODEL
-    tested_models, best_model_mse, best_model_params_RF, best_model_name = hypertuner_rf.tune_model(train_set)
+    #tested_models, best_model_mse, best_model_params_RF, best_model_name = hypertuner_rf.tune_model(train_set)
     
     print('perfoming prediction on Random Forest Model')
     ## LOAD MODEL and make prediction
-    loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
-    result_RF = loaded_model.predict(test_set)
+    #loaded_model = pickle.load(open(os.path.join(run_folder, 'models' , best_model_name ), 'rb'))
+    #result_RF = loaded_model.predict(test_set)
 
     print('Building & training Neural Network')
     ## CREATE NN REGRESSOR AND HYPTERTUNE
@@ -182,15 +182,15 @@ def main():
 
     print('Time to evalaute the best of each modeltypes...')
     
-    evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
+    '''evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
     evaluate_RF.evaluate_model(result_RF,truth)
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
-    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
+    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')'''
 
     evaluate_NN = Evaluator(conf['base_folder'],run_folder,'Neural_Network_Regressor',best_model_params_NN)
     evaluate_NN.evaluate_model(result_NN,truth)
-    evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_5')
-    evaluate_RF.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_10')
+    evaluate_NN.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_5')
+    evaluate_NN.evaluate_on_map(result_NN, truth, test_set_map,'accuracy_10')
     
 
 

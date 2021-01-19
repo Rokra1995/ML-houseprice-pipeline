@@ -1,5 +1,3 @@
-'''Contains classes to load data
-'''
 import pandas as pd
 import numpy as np
 import os
@@ -9,7 +7,7 @@ class DataLoader(object):
     def __init__(self, base_folder):
         self.base_folder = base_folder  
 
-    #Emmanuel
+    # © Emmanuel Owusu Annim
     def load_funda_data_2018(self):
         full_path = os.path.join(self.base_folder, 'data','raw','funda_2018.csv')
         data = pd.read_csv(full_path)
@@ -29,10 +27,11 @@ class DataLoader(object):
         print('Funda data of 2018 successfully loaded')
         return data
     
-    #Robin
+    # © Robin Kratschmayr
     def load_funda_data_2020(self):
         full_path = os.path.join(self.base_folder, 'data','raw','funda_2020_sold_houses.csv')
         data = pd.read_csv(full_path)
+        # Renaming columns to match funda 2018 data
         data = data.rename(columns={'yearofbuilding':'yearOfBuilding',
                                     'energylabelclass':'energylabelClass',
                                     'fulldescription':'fullDescription',
@@ -49,7 +48,7 @@ class DataLoader(object):
         print('Funda data of 2020 successfully loaded')
         return data
 
-    #Emmanuel
+    # © Emmanuel Owusu Annim
     def load_broker_info(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'brokers_2020_info.csv')
         data = pd.read_csv(full_path)
@@ -57,14 +56,14 @@ class DataLoader(object):
         print('Broker Information successfully loaded')
         return data
         
-    #Robin
+    # © Robin Kratschmayr
     def load_broker_reviews(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'brokers_2020_reviews.csv')
         data = pd.read_csv(full_path)
         print('Broker reviews successfully loaded')
         return data
     
-    #Emmanuel
+    # © Emmanuel Owusu Annim
     def load_cbs_data(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'CBS_data.csv')
         data = pd.read_csv(full_path, sep=";")
@@ -78,7 +77,7 @@ class DataLoader(object):
         print('CBS info successfully loaded')
         return data
     
-    #Robin
+    # © Robin Kratschmayr
     def load_cbs_postcodes(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'pc6-gwb2020.csv')
         data = pd.read_csv(full_path, sep=";")
@@ -86,7 +85,7 @@ class DataLoader(object):
         print('cbs postcodes successfully loaded')
         return data
 
-    #Emmanuel
+    # © Emmanuel Owusu Annim
     def load_crime_data(self):
         full_path = os.path.join(self.base_folder, 'data', 'raw', 'crime_data.csv')
         data = pd.read_csv(full_path, sep=";")
@@ -96,7 +95,7 @@ class DataLoader(object):
         print('crime data successfully loaded')
         return data
 
-    #Emmanuel
+    # © Emmanuel Owusu Annim
     def load_tourist_info(self):
         full_path = os.path.join(self.base_folder, 'data','raw','tourist_info.csv')
         data = pd.read_csv(full_path, sep=";")
@@ -105,7 +104,7 @@ class DataLoader(object):
         print('tourist info successfully loaded')
         return data
 
-    #Felicia
+    # © Felicia Betten
     def load_brt_2020(self):
         full_path = os.path.join(self.base_folder, 'data/raw/brt2020.csv')
         data = pd.read_csv(full_path, sep=";")

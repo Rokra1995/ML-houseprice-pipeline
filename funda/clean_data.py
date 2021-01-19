@@ -40,8 +40,7 @@ class DataCleaner(object):
         return data
     
     # © Baris Orman
-    @staticmethod
-    def clean_funda_2018(data):
+    def clean_funda_2018(self,data):
         #Renaming the columns to english
         data = data.fillna(0).drop(['globalId', 'globalId.1','kantoor_naam_MD5hash'], axis=1)
 
@@ -82,8 +81,7 @@ class DataCleaner(object):
 
 
     # © Robin Kratschmayr
-    @staticmethod
-    def clean_broker_info(data):
+    def clean_broker_info(self,data):
         #dropping columns url & replacing the word 'missing' with a 0 to be able to transform col as integer
         data = data.replace('Missing',0)
         #replacing the whitespace in the middle of the postcode to be able to link with other cbs data
@@ -109,8 +107,7 @@ class DataCleaner(object):
         return data
 
     # © Robin Kratschmayr
-    @staticmethod
-    def clean_broker_reviews(data):
+    def clean_broker_reviews(self, data):
         #shortening the reviewtype
         data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)
         #renaming the column Reviewtype to a more accurate name
@@ -121,16 +118,14 @@ class DataCleaner(object):
         return data
             
     # © Emmanuel Owusu Annim
-    @staticmethod
-    def clean_crime_info(data):
+    def clean_crime_info(self, data):
         # Each gemeente has several crime info, out of time reasons we can only input the total amount of registered crimes into the model
         data = data.groupby(['Municipalitycode']).sum().reset_index().fillna(-1)
         print("Crime info cleaned")
         return data
 
     # © Robin Kratschmayr
-    @staticmethod
-    def clean_cbs_info(data):
+    def clean_cbs_info(self, data):
         data = data.drop(columns=['ID','NameOfMunicipality','Codering_3','MostCommonPostalCode'])
         data = data.replace("       .", -1)
         data = data.replace("         .", -1)
@@ -140,15 +135,13 @@ class DataCleaner(object):
             
 
     # © Robin Kratschmayr
-    @staticmethod
-    def clean_cbs_postcodes(data):
+    def clean_cbs_postcodes(self,data):
         data = data.astype({'NeighborhoodCode':'Int64'}).drop_duplicates(subset='zipcode', keep="first")
         print("CBS zipcodes cleaned")
         return data
 
     # © Felicia Betten
-    @staticmethod
-    def clean_brt_2020(data):
+    def clean_brt_2020(self, data):
         data = data.rename(columns={'buurtcode2020':'NeighborhoodCode','buurtnaam2020':'NeighborhoodName','GM_2020':'Municipalitycode','GM_NAAM':'MunicipalityName','WK_2020':'DistrictCode','WK_NAAM':'DistrictName'})
         data = data.drop(axis=1, columns='WK2020')
         data = data.drop(columns=['NeighborhoodName'])

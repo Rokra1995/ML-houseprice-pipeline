@@ -50,40 +50,38 @@ def main():
     with open(os.path.join(run_folder, 'logs', 'run_config.json'), 'w') as f:
         json.dump(conf, f)
 
-    ## LOAD AND CLEAN
-    # load the raw data and clean it
-    # if the option reload_clean_data is set to true, then reload the clean data
-    # from the previous run
-    # the whole logic block below could be encapsulated in its own function/class
-    reload_clean_data = False
+    ## LOAD AND CLEAN 
+    #or use previously created features
     try:
         reload_clean_data = conf['loading_params']['reload_clean_data']
     except KeyError:
         pass
-    reload_clean_data = False 
+
     if reload_clean_data:
-        print("Attempting to reload previously cleaned data")
+        print("Attempting to reload previously prepared data")
         try:
             # finding the latest run
             runs = [x for x in os.listdir(conf['base_folder']) if x.startswith('run')]
             runs.sort()
             previous_run = runs[-2]
-            # copying over the cleaned data of the previous run
-            shutil.copyfile(os.path.join(conf['base_folder'], previous_run, 'clean', 'housing_info.feather'), 
-            os.path.join(conf['base_folder'], run_folder, 'clean', 'housing_info.feather'))
-            shutil.copyfile(os.path.join(conf['base_folder'], previous_run, 'clean', 'power_df.feather'), 
-            os.path.join(conf['base_folder'], run_folder, 'clean', 'power_df.feather'))
-            # loading the clean data of the previous run
-            housing_info = pd.read_feather(os.path.join(run_folder, 'clean', 'housing_info.feather'))
-            power_df = pd.read_feather(os.path.join(run_folder, 'clean', "power_df.feather"))
-            print("previously cleaned data reloaded")
+            # loading the log of previous run to check if data can be loaded:
+            with open(os.path.join(conf['base_folder'],previous_run,'logs','run_config.json'), 'r') as f:
+                conf_prev = json.load(f)
+            
+            if (conf_prev['training_params']['data_level'] == conf['training_params']['data_level'] and conf_prev['demo_mode'] == conf['demo_mode']):
+                # copying over the cleaned data of the previous run
+                shutil.copyfile(os.path.join(conf['base_folder'], previous_run, 'prepared', 'all_features.feather'), 
+                os.path.join(conf['base_folder'], run_folder, 'prepared', 'all_features.feather'))
+                # loading the clean data of the previous run
+                all_features = pd.read_feather(os.path.join(run_folder, 'prepared', 'all_features.feather'))
+                print("previously prepared features reloaded")
+            else:
+                raise Exception('Cannot load features from previous run. Data level differs.')
         except Exception as e:
             print(f'''reloading previously cleaned data failed with error {e}.\n
             Falling back on regenerating clean data.
             ''')
             reload_clean_data = False
-    if conf['training_params']['data_level'] == 1:
-        reload_clean_data == False
 
     if reload_clean_data is False:
         print("######################## Loading data... ########################")
@@ -91,7 +89,7 @@ def main():
         data_loader = DataLoader(conf['base_folder'])
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
-        if conf['demo_mode'] == 1:
+        if conf['demo_mode']:
             funda_2018 = funda_2018[:1000]
             funda_2020 = funda_2020[:1000]
         zipcodes = data_loader.load_cbs_postcodes()
@@ -112,29 +110,15 @@ def main():
         crime_cleaned = data_cleaner.clean_crime_info(crime_info)
         broker_cleaned = data_cleaner.clean_broker_info(broker_info)
 
-        print("######################## Storing the cleaned data on the disk... ########################")
-        # storing the clean data on disk
-        #funda_2018_cleaned.reset_index().to_feather(os.path.join(run_folder, 'clean', 'funda_2018.feather'))
-        #funda_2020_cleaned.to_feather(os.path.join(run_folder, 'clean', 'funda_2020.feather'))
-        #cbs_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_info.feather'))
-        #zipcode_data_cleaned.to_feather(os.path.join(run_folder, 'clean', 'cbs_postcodes.feather'))
-        #crime_cleaned.to_feather(os.path.join(run_folder, 'clean', 'crime_info.feather'))
-        #tourist_cleaned.to_feather(os.path.join(run_folder, 'clean', 'tourist_info.feather'))
-        #broker_cleaned.to_feather(os.path.join(run_folder, 'clean', 'broker_info.feather'))
-        #brt_data_cleaned.to_feather(os.path.join(run_folder, 'clean', 'brt.feather'))
-
-        print("######################## data loaded, cleaned and saved ########################")
-    
-
-
-    ## CREATE MODELLING FEATURES
-    print("######################## creating features... ########################") 
-    featurize = Featurizer()
-    funda = featurize.funda(funda_2018_cleaned, funda_2020_cleaned,zipcode_data_cleaned, brt_data_cleaned,conf['training_params']['data_level'])
-    cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
-    broker_ft = featurize.broker_info(broker_cleaned)
-    all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,conf['training_params']['data_level']).reset_index()
-    print("######################## all features are created ########################")
+        ## CREATE MODELLING FEATURES
+        print("######################## creating features... ########################") 
+        featurize = Featurizer()
+        funda = featurize.funda(funda_2018_cleaned, funda_2020_cleaned,zipcode_data_cleaned, brt_data_cleaned,conf['training_params']['data_level'])
+        cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
+        broker_ft = featurize.broker_info(broker_cleaned)
+        all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,conf['training_params']['data_level']).reset_index()
+        all_features.to_feather(os.path.join(run_folder, 'prepared', 'all_features.feather'))
+        print("######################## all features are created ########################")
 
     ## CREATE TRAIN AND TEST SET
     ## PARTITION DATA
@@ -163,7 +147,7 @@ def main():
     ## make prediction
     result_RF = best_model_RF.predict(test_set)
 
-    #print('#### Evaluating Random Forest')
+    print('#### Evaluating Random Forest')
     evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
     evaluate_RF.evaluate_model(result_RF,truth)
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')

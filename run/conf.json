@@ -1,7 +1,7 @@
 {
     "base_folder": "/Users/Robinkratschmayr2/Library/Mobile Documents/com~apple~CloudDocs/2. Ausbildung/Master/Quarter 2/Artificial Intelligence for Business/Assignment/product3team2",
     "loading_params": {
-        "reload_clean_data": 0
+        "reload_clean_data": true
     },
     "training_params": {
         "perc_test": 0.3,
@@ -23,5 +23,5 @@
             }
         }
     },
-    "demo_mode": 1
+    "demo_mode": true
 }

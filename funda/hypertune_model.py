@@ -5,6 +5,7 @@ from copy import deepcopy
 import pickle
 import os
 
+# © Robin Kratschmayr
 class Hypertuner(object):
 
     def __init__(self, estimator, tuning_params, run_folder):
@@ -16,10 +17,10 @@ class Hypertuner(object):
         # now perform cross validation fitting for each split
         splits = train_set['cv_split'].unique().tolist()
         splits.sort()
-
         cv_errors = []
 
         for i in splits:
+            print(f'Crossvalidate Split {i} / {splits[-1]}')
             train_split = train_set.query(f"cv_split != {i}")
             X_train = train_split.drop(['sellingPrice', 'cv_split'],axis=1)
             y_train = train_split['sellingPrice']
@@ -49,34 +50,30 @@ class Hypertuner(object):
                 d[list(self.tuning_params.keys())[j]] = i[j]
             parameter_combos_dicts.append(d)
 
-        tested_models = []
+        #set arbitrary high number for best_mode_mse that will be overwritten after first run
+        #in case the first run mse is worse than this number, the mdel is so bad that it does not deserve to be saved. 
+        # An error would be thrown and the params in the conf.json have to be adapted
         best_model_mse = 10000000000
         best_model_params = ''
         best_model_name = ''
 
+        #hypertune model for all combos
         for d in parameter_combos_dicts:
-            print('testing combo: ', d)
             estimator_cv = deepcopy(self.estimator)
             estimator_cv = estimator_cv.set_params(**d)
             mean_cv_error, trained_estimator = self.calculate_mean_cv_error(train_set, estimator_cv)
-            tested_models.append([d,mean_cv_error])
-            # saving best model to disk
+            print(f"Parameters: {d}, RMSE: {mean_cv_error}")
+            # save best model params
             if mean_cv_error < best_model_mse:
-                filename = 'Best_model.sav'
-                pickle.dump(trained_estimator, open(os.path.join(self.run_folder, 'models' , 'Best_model.sav' ), 'wb'))
                 best_model_params = d
                 best_model_mse = mean_cv_error
-        print(tested_models)
 
-        # Renaming the best saved model with params and mse
-        string = 'Best_model'
-        for k,v in best_model_params.items():
-            string = string + '_'+k+':'+str(v)
+        #train estiamtor on full train set with best parmeters and save it to disk
+        estimator_final = deepcopy(self.estimator)
+        estimator_final = estimator_final.set_params(**best_model_params)
+        X_train = train_set.drop(['sellingPrice', 'cv_split'],axis=1)
+        y_train = train_set['sellingPrice']
+        estimator_final.fit(X=X_train, y = y_train)
+        pickle.dump(estimator_final, open(os.path.join(self.run_folder, 'models' , f'Model_{best_model_params}_RMSE:_{best_model_mse}.sav' ), 'wb'))
 
-        string = string + 'MSE:' + str(int(best_model_mse))
-        string = string + '.sav'
-
-        os.rename(os.path.join(self.run_folder, 'models' , 'Best_model.sav' ),os.path.join(self.run_folder, 'models' , string ))
-        best_model_name = string
-
-        return tested_models, best_model_mse, best_model_params, best_model_name
+        return estimator_final, best_model_mse, best_model_params

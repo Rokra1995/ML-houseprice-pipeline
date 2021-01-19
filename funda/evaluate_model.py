@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 
+# © Robin Kratschmayr
 class Evaluator(object):
 
     def __init__(self,base_folder, run_folder, model, model_params):
@@ -85,11 +86,10 @@ class Evaluator(object):
         ax2.text(-2000000, 3700000, text, bbox={'facecolor': 'red', 'alpha': 0.3, 'pad': 10})
 
         plt.subplots_adjust(wspace=0.15, hspace=0.4)
-        plt.show()
         plot_name = self.model + "_best.png"
         evaluation.savefig(os.path.join(self.plot_folder,plot_name),bbox_inches='tight')
 
-        return print('Model evaluated. Plots can be found in the predictions folder')
+        return 'evaluated'
 
     def evaluate_on_map(self, result, truth, test_set_map,accuracy_level):
         error = pd.DataFrame(result,columns=['result'])
@@ -108,11 +108,10 @@ class Evaluator(object):
 
         gemeente_boundaries = gpd.read_file(os.path.join(self.base_folder,'data','geometrical','Gemeentegrenzen.gml'))
         gemeente_boundaries['Code'] = gemeente_boundaries['Code'].astype('int')
-        final_df = gemeente_boundaries.merge(geo_df, how="left", left_on="Code", right_on="GM_Code")
-
+        final_df = gemeente_boundaries.merge(geo_df, how="left", left_on="Code", right_on="GM_Code") 
         p = final_df.plot(column=accuracy_level, figsize = (12,10),legend =True, cmap = 'RdYlGn', vmin=0,vmax=1)
         p.axis('off')
         p.set_title('Accuracy per gemeente with treshhold: {}'.format(accuracy_level))
         p.get_figure().savefig(os.path.join(self.plot_folder,'{}_geo_map_{}.png'.format(self.model,accuracy_level)))
-        return print('please checkout the awesome plot')
+        return 'evaluated'
     

@@ -7,8 +7,7 @@ import numpy as np
 class DataCleaner(object):
 
     # © Felicia Betten
-    @staticmethod
-    def clean_funda_2020(data):
+    def clean_funda_2020(self, data):
         # Replace all None values by NaN
         data = data.replace("None", np.NaN)
         # Remove m³ removed from parcelsurface  

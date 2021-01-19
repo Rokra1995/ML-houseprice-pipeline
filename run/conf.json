@@ -3,16 +3,19 @@
     "loading_params": {
         "reload_clean_data": 0
     },
-    "cleaning_params": {},
     "training_params": {
-        "test_perc": 0.2,
+        "perc_test": 0.3,
+        "train_cv_splits":3,
+        "seed":1234,
+        "data_level" : 1,
+        
         "hypertuning": {
             "RF_params": {
-                "n_estimators": [500],
-                "max_depth": [500]
+                "n_estimators": [10],
+                "max_depth": [10]
             },
             "NN_params": {
-                "hidden_layer_sizes":[[1000,1000,1000,1000],[2000,2000,2000,2000]],
+                "hidden_layer_sizes":[[32]],
                 "max_iter":[250],
                 "batch_size": [250],
                 "solver": ["adam"]
@@ -20,6 +23,5 @@
             }
         }
     },
-    "data_level" : 2,
     "demo_mode": 1
 }

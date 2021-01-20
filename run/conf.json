@@ -5,9 +5,9 @@
     },
     "training_params": {
         "perc_test": 0.3,
-        "train_cv_splits":3,
+        "train_cv_splits":4,
         "seed":1234,
-        "data_level" : 1,
+        "data_level" : 2,
         
         "hypertuning": {
             "RF_params": {
@@ -17,8 +17,9 @@
             "NN_params": {
                 "hidden_layer_sizes":[[32]],
                 "max_iter":[250],
-                "batch_size": [250],
-                "solver": ["adam"]
+                "batch_size": ["auto"],
+                "solver": ["adam"],
+                "learning_rate":["constant","adaptive"]
 
             }
         }

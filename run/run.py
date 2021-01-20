@@ -90,7 +90,7 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode']:
-            funda_2018 = funda_2018[:1000]
+            funda_2018 = funda_2018[:10000]
             funda_2020 = funda_2020[:1000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()

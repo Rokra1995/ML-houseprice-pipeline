@@ -42,7 +42,7 @@ class Evaluator(object):
         acc_level_df['x_axis'] = acc_level_df.treshold.apply(lambda x: ("{:3.2f}%".format(x*100)))
         
         #create new figure
-        evaluation = plt.figure('evaluation')
+        evaluation = plt.figure(self.model)
         x = accuracy_plot_data.truth.reset_index().index.to_list()
 
         #creating the axes to assign the plots to

@@ -1,7 +1,7 @@
 {
     "base_folder": "/Users/Robinkratschmayr2/Library/Mobile Documents/com~apple~CloudDocs/2. Ausbildung/Master/Quarter 2/Artificial Intelligence for Business/Assignment/product3team2",
     "loading_params": {
-        "reload_clean_data": true
+        "reload_clean_data": false
     },
     "training_params": {
         "perc_test": 0.3,
@@ -11,18 +11,18 @@
         
         "hypertuning": {
             "RF_params": {
-                "n_estimators": [10],
-                "max_depth": [10]
+                "n_estimators": [150],
+                "min_samples_leaf":[7]
             },
             "NN_params": {
-                "hidden_layer_sizes":[[32]],
-                "max_iter":[250],
+                "hidden_layer_sizes":[[200,200,200]],
+                "max_iter":[500],
                 "batch_size": ["auto"],
                 "solver": ["adam"],
-                "learning_rate":["constant","adaptive"]
-
+                "learning_rate":["adaptive"],
+                "learning_rate_init":[0.001]
             }
         }
     },
-    "demo_mode": true
+    "demo_mode": false
 }

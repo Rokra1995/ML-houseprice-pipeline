@@ -83,6 +83,9 @@ class Featurizer(object):
         cbs_data = cbs_data_old.fillna(cbs_data_old.mean())
         cbs_data['Municipalitycode'] = cbs_data['Municipalitycode'].str.strip()
         
+        #summarize tourist info per gemeente
+        tourist_info = tourist_info.groupby('Municipalitycode').sum().reset_index()
+        
         #Merge TouristData & CrimeData together on key 'Municipalitycode'
         merge1 = (pd.merge(crime_data, tourist_info, on='Municipalitycode'))
 

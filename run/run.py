@@ -82,7 +82,7 @@ def main():
             Falling back on regenerating clean data.
             ''')
             reload_clean_data = False
-
+    reload_clean_data = False
     if reload_clean_data is False:
         print("######################## Loading data... ########################")
         # load data
@@ -90,8 +90,8 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode']:
-            funda_2018 = funda_2018[:10000]
-            funda_2020 = funda_2020[:1000]
+            funda_2018 = funda_2018[:35000]
+            funda_2020 = funda_2020[:35000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()
@@ -136,7 +136,7 @@ def main():
     test_set_map = test_set[['GM2020']]
     test_set = test_set.drop(columns=['GM2020'])
 
-    print("######################## Building & training & hypertune Random Forest Model ########################")
+    '''print("######################## Building & training & hypertune Random Forest Model ########################")
     ## CREATE RF REGRESSOR AND HYPTERTUNE
     hypertuner_RF = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'], run_folder= run_folder)
 
@@ -151,7 +151,7 @@ def main():
     evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
     evaluate_RF.evaluate_model(result_RF,truth)
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
-    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
+    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')'''
 
     print("######################## Building & training Neural Network ########################")
     ## CREATE NN REGRESSOR AND HYPTERTUNE

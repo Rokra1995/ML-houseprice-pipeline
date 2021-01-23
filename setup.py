@@ -12,7 +12,6 @@ setup(
         "scikit-learn",
         "matplotlib",
         'pyarrow',
-        'nltk',
         'geopandas'
     ],
     python_requires="==3.8.5"

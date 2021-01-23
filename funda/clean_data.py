@@ -14,8 +14,9 @@ class DataCleaner(object):
         data['parcelSurface'] = data['parcelSurface'].str.replace(r'\D', '').astype(int)
         # Remove \r \n from housetype
         data['houseType'] = data['houseType'].str.rstrip('\r\n').str.replace(' ', '')
-        # Replace 0 in Garden_binary with NaN
-        #data['garden'] = data['garden'].replace(0, np.nan)      
+        # make sales agent case lower case to be able to join with broker info
+        data['sales_agent'] = data['sales_agent'].str.lower()
+        data['buying_agent'] = data['buying_agent'].str.lower()    
 
         def calculate_mean_yearofbuilding_funda_2020(date):
             date = date.replace('After ', '') # replace 'After ' with empty
@@ -82,6 +83,9 @@ class DataCleaner(object):
 
     # © Robin Kratschmayr
     def clean_broker_info(self,data):
+        #chane name of broker to all lower case and remove brokers with no name
+        data = data[data.name_broker!='Missing value']
+        data['name_broker'] = data.name_broker.str.lower()
         #dropping columns url & replacing the word 'missing' with a 0 to be able to transform col as integer
         data = data.replace('Missing',0)
         #replacing the whitespace in the middle of the postcode to be able to link with other cbs data
@@ -103,19 +107,15 @@ class DataCleaner(object):
         for k,v in type_dict.items():
             data = data.astype({k: v})
 
+        grouped_brokers_avg = data.groupby('name_broker').mean().reset_index()[['name_broker','score_broker']]
+        grouped_brokers_sum = data.groupby('name_broker').sum().reset_index()[['name_broker','number_reviews_broker','number_houses_for_sale_offered','number_houses_sold_last_12_months']]
+        grouped_broker_count = data.groupby('name_broker').count().reset_index()[['name_broker','score_broker']].rename(columns={'score_broker':'number_locations'})
+        all_brokers = grouped_broker_count.merge(grouped_brokers_sum, on='name_broker')
+        all_brokers = all_brokers.merge(grouped_brokers_avg, on='name_broker')
+        broker_zipcodes = data[data.name_broker.isin(all_brokers[all_brokers.number_locations==1]['name_broker'].tolist())][['name_broker','zipcode_broker']]
+        all_brokers = all_brokers.merge(broker_zipcodes, on='name_broker', how="left")
         print("Broker info cleaned")
-        return data
-
-    # © Robin Kratschmayr
-    def clean_broker_reviews(self, data):
-        #shortening the reviewtype
-        data['ReviewType'] = data.ReviewType.replace(" reviews","",regex=True)
-        #renaming the column Reviewtype to a more accurate name
-        data = data.rename(columns={'SalesAgent':'Broker'})
-        #transforming the reviewdate into datetimeformat
-        data['ReviewDate'] = pd.to_datetime(data['ReviewDate'])
-        print("Broker reviews cleaned")
-        return data
+        return all_brokers
             
     # © Emmanuel Owusu Annim
     def clean_crime_info(self, data):

@@ -8,7 +8,8 @@
 1. Download the data.zip file in our shared oneDrive. Accesible under this [Link](https://icthva-my.sharepoint.com/:u:/g/personal/baris_orman_hva_nl/EVboGyq1MNdPn-UpxRvaqhsBzHoZh8wxW4it8IKnsm3Dwg?email=r.pinosio%40hva.nl&e=SAJMIx)
 2. Unzip the file and place it on the same level as the setup.py in the project folder.
 3. Ensure to have the same python Version as in the setup.py file specified. The pipeline does work with other versions but we only guarantee functionality for the specified version.
-4. Move in the terminal into the projectfolder and run 'pip install -e .'
+4. Change the base folder the current path of the product3team2 folder in the run/conf.json file
+5. Move in the terminal into the projectfolder and run 'pip install -e .'
 
 ## How to set up the config.json
 

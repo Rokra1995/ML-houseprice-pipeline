@@ -6,20 +6,15 @@ import shutil
 import pandas as pd
 import numpy as np
 import pickle
-from sklearn.model_selection import train_test_split
-
 from funda.load_data import DataLoader
 from funda.clean_data import DataCleaner
 from funda.featurize_data import Featurizer
 from funda.partition_data import DataPartitioner
 from funda.hypertune_model import Hypertuner
 from funda.evaluate_model import Evaluator
-
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
-from matplotlib import pyplot as plt
-
-
+#from matplotlib import pyplot as plt
 
 # important: for the above import to work, the package needs to be
 # installed in the conda environment using e.g. pip install -e .
@@ -41,7 +36,7 @@ def main():
     run_folder = os.path.join(conf['base_folder'], 'run_' + run_id_start_time.strftime("%Y%m%d_%H%M"))
     # make sure we have all folders where the output of the run
     # will be stored
-    for i in ['clean', 'logs', 'prepared', 'models', 'predictions','plots']:
+    for i in ['logs', 'prepared', 'models', 'plots']:
         Path(run_folder, i).mkdir(parents=True, exist_ok=True)
     # if the raw folder does not exist, stop and throw an error
     assert os.path.exists(os.path.join(conf['base_folder'], 'data', 'raw')), "I can't find the raw folder!"
@@ -82,7 +77,7 @@ def main():
             Falling back on regenerating clean data.
             ''')
             reload_clean_data = False
-    reload_clean_data = False
+
     if reload_clean_data is False:
         print("######################## Loading data... ########################")
         # load data
@@ -90,8 +85,8 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode']:
-            funda_2018 = funda_2018[:35000]
-            funda_2020 = funda_2020[:35000]
+            funda_2018 = funda_2018[:2000]
+            funda_2020 = funda_2020[:2000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()
@@ -117,7 +112,8 @@ def main():
         cbs_ft = featurize.cbs_data(crime_cleaned, tourist_cleaned, cbs_cleaned)
         broker_ft = featurize.broker_info(broker_cleaned)
         all_features = featurize.combine_featurized_data(funda, cbs_ft,broker_ft,conf['training_params']['data_level']).reset_index()
-        all_features.to_feather(os.path.join(run_folder, 'prepared', 'all_features.feather'))
+        if conf['training_params']['data_level'] <4:
+            all_features.to_feather(os.path.join(run_folder, 'prepared', 'all_features.feather'))
         print("######################## all features are created ########################")
 
     ## CREATE TRAIN AND TEST SET
@@ -136,7 +132,7 @@ def main():
     test_set_map = test_set[['GM2020']]
     test_set = test_set.drop(columns=['GM2020'])
 
-    '''print("######################## Building & training & hypertune Random Forest Model ########################")
+    print("######################## Building & training & hypertune Random Forest Model ########################")
     ## CREATE RF REGRESSOR AND HYPTERTUNE
     hypertuner_RF = Hypertuner(estimator = RandomForestRegressor(random_state=1234), tuning_params = conf['training_params']['hypertuning']['RF_params'], run_folder= run_folder)
 
@@ -151,7 +147,7 @@ def main():
     evaluate_RF = Evaluator(conf['base_folder'],run_folder,'Random_Forest_Regressor',best_model_params_RF)
     evaluate_RF.evaluate_model(result_RF,truth)
     evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_5')
-    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')'''
+    evaluate_RF.evaluate_on_map(result_RF, truth, test_set_map,'accuracy_10')
 
     print("######################## Building & training Neural Network ########################")
     ## CREATE NN REGRESSOR AND HYPTERTUNE

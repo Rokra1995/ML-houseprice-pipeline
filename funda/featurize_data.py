@@ -56,6 +56,11 @@ class Featurizer(object):
         # join houseType_df with funda_2018
         all_data = all_data.join(houseTypes, how='left').drop(axis=1, columns='houseType') 
 
+        #categorize Building year
+        all_data['yearOfBuilding_bins'] = pd.cut(x=all_data['yearOfBuilding'], bins=[step for step in range(1930,2030,5)],include_lowest=True)
+        all_data['yearOfBuilding_bins'] = all_data[['yearOfBuilding','yearOfBuilding_bins']].apply(lambda x: '<1930' if (x['yearOfBuilding'] < 1930) else x.yearOfBuilding_bins , axis=1)
+        all_data = all_data.drop(columns='yearOfBuilding')
+        all_data = pd.get_dummies(data=all_data, columns=['yearOfBuilding_bins'])
         #get dummies   
         all_data = pd.get_dummies(data=all_data, columns=['categoryObject', 'energylabelClass'])
 
@@ -96,7 +101,7 @@ class Featurizer(object):
    # © Robin Kratschmayr
     @staticmethod
     def broker_info(broker_info):
-        broker_features = broker_info.drop(columns=['zipcode_broker','description_broker','url'])
+        broker_features = broker_info.drop(columns=['zipcode_broker'])
         return broker_features
 
     # © Robin Kratschmayr

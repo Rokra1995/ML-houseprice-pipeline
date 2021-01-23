@@ -9,12 +9,12 @@
 2. Unzip the file and place it on the same level as the setup.py in the project folder.
 3. Ensure to have the same python Version as in the setup.py file specified. The pipeline does work with other versions but we only guarantee functionality for the specified version.
 4. Change the base folder the current path of the product3team2 folder in the run/conf.json file
-5. Move in the terminal into the projectfolder and run 'pip install -e .'
+5. Move in the terminal into the projectfolder and run `pip install -e .`
 
 ## How to set up the config.json
 
-1. If you only want to test the code and all created modules -> set 'demo_mode = true'. This will use the selected parameters but only the first 20.000 lines of the Dataset.
-2. To find the best model -> set 'demo_mode = false'. Select the parameters for the models you want to test. Select the data level you want to test on.
+1. If you only want to test the code and all created modules -> set `demo_mode = true`. This will use the selected parameters but only the first 20.000 lines of the Dataset.
+2. To find the best model -> set `demo_mode = false`. Select the parameters for the models you want to test. Select the data level you want to test on.
 3. What does Data level mean?
    - We included extra data beside the funda_2018 housing data.
    - To get more possible relevant information we included:
@@ -48,15 +48,15 @@
 
 ## How to run the code:
 After the above steps are done and the parameters to test are specified, the pipeline can be started. To do so, move into the run folder, where the conf.json and run.py file lays and use the following code to start:
-'''
+```
 python run.py
-'''
+```
 
 ## How to interpret the model?
 To determine if a model is good or bad we implemented several features. 
 While running, the pipeline automatically chooses the best combination of the given parameters by crossvalidating for the lowest Mean Squared Error (RMSE). 
 
-Each run creates a new folder that includes the running date and time in the folder name. (E.g. run_20210119_1237 -> Run on the 19. January 2021 at 12:37h) This folder stores the best Random Forest and Neural Network Model in its subfolder called models as abinary python object that can be loaded with **pickle**. More interesting for evaluating the model is the plots folder. That contains 3 different plots for each best Random Forest and Neural Network model.
+Each run creates a new folder that includes the running date and time in the folder name. (E.g. **run_20210119_1237** -> Run on the 19. January 2021 at 12:37h) This folder stores the best Random Forest and Neural Network Model in its subfolder called models as abinary python object that can be loaded with **pickle**. More interesting for evaluating the model is the plots folder. That contains 3 different plots for each best Random Forest and Neural Network model.
 
 1. The Model Overview:
    - This plot contains the chosen parameters for the model in Header and the model RMSE on the predicted value.
@@ -71,7 +71,7 @@ Each run creates a new folder that includes the running date and time in the fol
    - Example: 
    - ![Example Plot 1](images/model_overview.png)
 2. The Model accuracy for each gemeente.
-    - This plot shows the Model accuracy for each gemeente specified with colors. The greener the map, the better the accuracy based on the specified threshold. The threshold can be read in the header where 'accuracy_5' stands for a 5% threshold and 'accuracy_10' stands for a 10% treshold. 
+    - This plot shows the Model accuracy for each gemeente specified with colors. The greener the map, the better the accuracy based on the specified threshold. The threshold can be read in the header where `accuracy_5` stands for a 5% threshold and `accuracy_10` stands for a 10% treshold. 
     - E.g. If a gemente shows a light green on the 10% accuracy plot. About 70% of all houseprices in that gemeente are predicted with a deviation of less then 10 or 10% of the real houseprice.
     - Example: ![Example Plot 2](images/model_accuracy_5.png)
     - Example 2: ![Example Plot 2](images/model_accuracy_10.png)

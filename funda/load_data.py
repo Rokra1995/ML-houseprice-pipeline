@@ -55,13 +55,6 @@ class DataLoader(object):
         data = data.rename(columns={'PC6': 'Zipcode', 'Buurt2020': 'NeighborhoodCode', 'Wijk2020': 'DistrictCode', 'Gemeente2020': 'MunicipalityCode'})
         print('Broker Information successfully loaded')
         return data
-        
-    # © Robin Kratschmayr
-    def load_broker_reviews(self):
-        full_path = os.path.join(self.base_folder, 'data', 'raw', 'brokers_2020_reviews.csv')
-        data = pd.read_csv(full_path)
-        print('Broker reviews successfully loaded')
-        return data
     
     # © Emmanuel Owusu Annim
     def load_cbs_data(self):
@@ -101,6 +94,7 @@ class DataLoader(object):
         data = pd.read_csv(full_path, sep=";")
         data = data.drop(columns=['WoonlandVanGasten','ID','Perioden'])
         data = data.rename(columns={'RegioS': 'Municipalitycode', 'Gasten_1': 'Guests', 'Overnachtingen_2': 'Overnights'})
+        data = data.groupby('Municipalitycode').sum().reset_index()
         print('tourist info successfully loaded')
         return data
 

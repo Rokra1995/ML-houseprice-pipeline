@@ -21,7 +21,10 @@ class Evaluator(object):
         error['result'] = error['result'].astype('int')
         error['accuracy'] = np.absolute((error.result/error.truth)-1)
         error['accuracy_2'] = error['accuracy']
-
+        rmse = np.sqrt(np.sum(np.square(truth - prediction))/truth.shape[0])
+        print('#########################################################################')
+        print(f'The best {self.model} with the parameters {self.model_params} has reached a RMSE of: {rmse} on the test set.')
+        print('#########################################################################')
         #some pandas magic to prepare a df for the accuracy plot, could be done easier and more beautiful
         bins_left = [0,0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2]
         bins_save = [0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,8]
@@ -86,7 +89,9 @@ class Evaluator(object):
         ax2.set_title("Predictions vs. reality plot")
         ax1.set_title("Model accuracy on certain treshold")
         text = self.model+" "+ str(self.model_params)
-        ax2.text(-2000000, 3700000, text, bbox={'facecolor': 'red', 'alpha': 0.3, 'pad': 10})
+        text2 = 'Mean squared error: ' + str(rmse)
+        ax1.text(-2, 1.38, text, bbox={'facecolor': 'red', 'alpha': 0.3, 'pad': 10})
+        ax1.text(-2, 1.2, text2, bbox={'facecolor': 'red', 'alpha': 0.3, 'pad': 10})
         plt.subplots_adjust(wspace=0.15, hspace=0.4)
         plot_name = self.model + "_best.png"
         evaluation.savefig(os.path.join(self.plot_folder,plot_name),bbox_inches='tight')

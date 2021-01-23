@@ -108,5 +108,6 @@ class DataLoader(object):
     def load_brt_2020(self):
         full_path = os.path.join(self.base_folder, 'data/raw/brt2020.csv')
         data = pd.read_csv(full_path, sep=";")
-        #data = data.drop(axis=1, columns='GM2020')
+        data = data.drop(axis=1, columns='GM2020')
+        print('BRT info successfully loaded')
         return data

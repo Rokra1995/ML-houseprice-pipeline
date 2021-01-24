@@ -62,7 +62,7 @@ class Hypertuner(object):
             estimator_cv = deepcopy(self.estimator)
             estimator_cv = estimator_cv.set_params(**d)
             mean_cv_error, trained_estimator = self.calculate_mean_cv_error(train_set, estimator_cv)
-            print(f"Parameters: {d}, RMSE: {mean_cv_error}")
+            print(f"Best parameters: {d}, RMSE: {mean_cv_error}")
             # save best model params
             if mean_cv_error < best_model_mse:
                 best_model_params = d

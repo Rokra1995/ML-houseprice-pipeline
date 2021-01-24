@@ -112,7 +112,7 @@ class DataCleaner(object):
         grouped_broker_count = data.groupby('name_broker').count().reset_index()[['name_broker','score_broker']].rename(columns={'score_broker':'number_locations'})
         all_brokers = grouped_broker_count.merge(grouped_brokers_sum, on='name_broker')
         all_brokers = all_brokers.merge(grouped_brokers_avg, on='name_broker')
-        broker_zipcodes = data[data.name_broker.isin(all_brokers[all_brokers.number_locations==1]['name_broker'].tolist())][['name_broker','zipcode_broker']]
+        broker_zipcodes = data[data.name_broker.isin(all_brokers[all_brokers.number_locations==1]['name_broker'].tolist())][['name_broker','zipcode_broker','description_broker']]
         all_brokers = all_brokers.merge(broker_zipcodes, on='name_broker', how="left")
         print("Broker info cleaned")
         return all_brokers

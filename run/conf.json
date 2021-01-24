@@ -11,12 +11,12 @@
         
         "hypertuning": {
             "RF_params": {
-                "n_estimators": [150],
+                "n_estimators": [200],
                 "min_samples_leaf":[5],
                 "min_samples_split":[5]
             },
             "NN_params": {
-                "hidden_layer_sizes":[[200,200,200]],
+                "hidden_layer_sizes":[[210,210,210]],
                 "max_iter":[500],
                 "batch_size": ["auto"],
                 "solver": ["adam"],

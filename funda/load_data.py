@@ -102,4 +102,6 @@ class DataLoader(object):
     def load_brt_2020(self):
         full_path = os.path.join(self.base_folder, 'data/raw/brt2020.csv')
         data = pd.read_csv(full_path, sep=";")
+        print('BRT info successfully loaded')
         return data
+

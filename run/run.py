@@ -14,14 +14,6 @@ from funda.hypertune_model import Hypertuner
 from funda.evaluate_model import Evaluator
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
-#from matplotlib import pyplot as plt
-
-# important: for the above import to work, the package needs to be
-# installed in the conda environment using e.g. pip install -e .
-# from the package root, or python setup.py develop.
-# See https://godatadriven.com/blog/a-practical-guide-to-using-setup-py/
-# for a good guide to this
-
 
 def main():
     ## PREPPING
@@ -85,8 +77,8 @@ def main():
         funda_2018 = data_loader.load_funda_data_2018()
         funda_2020 = data_loader.load_funda_data_2020()
         if conf['demo_mode']:
-            funda_2018 = funda_2018[:2000]
-            funda_2020 = funda_2020[:2000]
+            funda_2018 = funda_2018[:5000]
+            funda_2020 = funda_2020[:5000]
         zipcodes = data_loader.load_cbs_postcodes()
         brt_data = data_loader.load_brt_2020()
         cbs_info = data_loader.load_cbs_data()

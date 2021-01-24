@@ -58,7 +58,7 @@ class DataLoader(object):
     
     # © Emmanuel Owusu Annim
     def load_cbs_data(self):
-        full_path = os.path.join(self.base_folder, 'data', 'raw', 'CBS_data.csv')
+        full_path = os.path.join(self.base_folder, 'data', 'raw', 'cbs_data.csv')
         data = pd.read_csv(full_path, sep=";")
         data = data.rename(columns={'WijkenEnBuurten':'Municipalitycode','Gemeentenaam_1':'NameOfMunicipality','Mannen_6':'NumberOfMen',\
     'Vrouwen_7':'NumberOfWomen','k_0Tot15Jaar_8':'AgeFrom0to15years','k_15Tot25Jaar_9':'AgeFrom15to25years',\
@@ -102,6 +102,6 @@ class DataLoader(object):
     def load_brt_2020(self):
         full_path = os.path.join(self.base_folder, 'data/raw/brt2020.csv')
         data = pd.read_csv(full_path, sep=";")
-        data = data.drop(axis=1, columns='GM2020')
         print('BRT info successfully loaded')
         return data
+

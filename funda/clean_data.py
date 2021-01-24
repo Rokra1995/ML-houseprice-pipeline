@@ -98,10 +98,10 @@ class DataCleaner(object):
         type_dict = {'name_broker': 'string',
             'zipcode_broker':'string',
             'description_broker': 'string',
-            'score_broker': 'float64',
-            'number_reviews_broker': 'Float64',# has to be converted to float since the column contains NaN values that are not convertible to int
-            'number_houses_for_sale_offered': 'Float64',
-            'number_houses_sold_last_12_months': 'Float64',
+            'score_broker': 'float',
+            'number_reviews_broker': 'float',# has to be converted to float since the column contains NaN values that are not convertible to int
+            'number_houses_for_sale_offered': 'float',
+            'number_houses_sold_last_12_months': 'float',
             }
 
         for k,v in type_dict.items():
